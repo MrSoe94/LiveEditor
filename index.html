@@ -168,6 +168,7 @@
                 <p class="text-sm text-slate-400 mb-4">Tambahkan link CSS atau JS eksternal di sini. Konten ini akan dimasukkan ke dalam <code class="bg-slate-800 px-1 rounded text-sky-400">&lt;head&gt;</code>.</p>
                 
                 <div class="flex flex-wrap gap-2 mb-4">
+                    <button onclick="addLib('react')" class="px-2 py-1 text-xs bg-cyan-900/30 border border-cyan-700 hover:bg-cyan-900/50 text-cyan-400 rounded transition">+ React (with JSX)</button>
                     <button onclick="addLib('gsap')" class="px-2 py-1 text-xs bg-green-900/30 border border-green-700 hover:bg-green-900/50 text-green-400 rounded transition">+ GSAP</button>
                     <button onclick="addLib('tailwind')" class="px-2 py-1 text-xs bg-sky-900/30 border border-sky-700 hover:bg-sky-900/50 text-sky-400 rounded transition">+ Tailwind</button>
                     <button onclick="addLib('bootstrap')" class="px-2 py-1 text-xs bg-purple-900/30 border border-purple-700 hover:bg-purple-900/50 text-purple-400 rounded transition">+ Bootstrap</button>
@@ -378,6 +379,11 @@ if (typeof gsap !== 'undefined') {
         function addLib(type) {
             let tag = '';
             switch(type) {
+                case 'react':
+                    tag = '<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin><\/script>\n' +
+                          '<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin><\/script>\n' +
+                          '<script src="https://unpkg.com/@babel/standalone/babel.min.js"><\/script>';
+                    break;
                 case 'gsap':
                     tag = '<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"><\/script>';
                     break;
@@ -485,6 +491,9 @@ if (typeof gsap !== 'undefined') {
             const css = cssEditor.value;
             const js = jsEditor.value;
             const libs = libContent.value;
+            
+            // Auto-detect Babel for JSX support
+            const scriptType = libs.includes('babel') ? 'type="text/babel"' : '';
 
             const source = `
                 <!DOCTYPE html>
@@ -495,7 +504,7 @@ if (typeof gsap !== 'undefined') {
                 </head>
                 <body>
                     ${html}
-                    <script>
+                    <script ${scriptType}>
                         try {
                             ${js}
                         } catch (err) {
@@ -531,6 +540,9 @@ if (typeof gsap !== 'undefined') {
             const js = jsEditor.value;
             const libs = libContent.value;
 
+            // Auto-detect Babel for JSX support
+            const scriptType = libs.includes('babel') ? 'type="text/babel"' : '';
+
             const fullSource = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -545,7 +557,7 @@ ${css}
 <body>
 ${html}
 
-  <script>
+  <script ${scriptType}>
 ${js}
   <\/script>
 </body>
@@ -600,6 +612,9 @@ ${js}
             localStorage.setItem('lc_js', js);
             localStorage.setItem('lc_libs', libs);
 
+            // Auto-detect Babel for JSX support
+            const scriptType = libs.includes('babel') ? 'type="text/babel"' : '';
+
             const source = `
                 <!DOCTYPE html>
                 <html>
@@ -609,10 +624,11 @@ ${js}
                 </head>
                 <body>
                     ${html}
-                    <script>
+                    <script ${scriptType}>
                         try {
                             ${js}
                         } catch (err) {
+                            // Note: Babel compilation errors appear in console
                             document.body.innerHTML += '<div style="color:red; background:#fee; padding:10px; border:1px solid red; margin-top:20px;">Javascript Error: ' + err.message + '</div>';
                         }
                     <\/script>
