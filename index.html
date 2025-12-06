@@ -120,7 +120,19 @@
             </div>
 
             <!-- Editor Areas -->
-            <div class="relative flex-1 bg-[#1e293b]">
+            <div class="relative flex-1 bg-[#1e293b] group">
+                <!-- Copy Button (New) -->
+                <button onclick="copyCurrentCode(this)" class="absolute top-4 right-4 z-10 p-2 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 backdrop-blur-sm rounded-lg transition-all opacity-0 group-hover:opacity-100 border border-slate-700 shadow-lg" title="Salin Kode">
+                    <!-- Icon Copy -->
+                    <svg id="icon-copy" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <!-- Icon Check (Hidden by default) -->
+                    <svg id="icon-check" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </button>
+
                 <!-- HTML Editor -->
                 <textarea id="editor-html" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-4 code-font text-sm outline-none resize-none leading-relaxed" spellcheck="false" placeholder="<!-- Tulis HTML di sini -->"></textarea>
                 
@@ -367,6 +379,41 @@ if (typeof gsap !== 'undefined') {
             }
         }
 
+        // Copy Current Code Logic
+        function copyCurrentCode(btn) {
+            // Find which editor is currently visible
+            const editors = ['editor-html', 'editor-css', 'editor-js'];
+            let activeContent = '';
+            
+            editors.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el.classList.contains('hidden')) {
+                    activeContent = el.value;
+                }
+            });
+
+            if (activeContent) {
+                navigator.clipboard.writeText(activeContent).then(() => {
+                    // Visual Feedback
+                    const iconCopy = btn.querySelector('#icon-copy');
+                    const iconCheck = btn.querySelector('#icon-check');
+                    
+                    iconCopy.classList.add('hidden');
+                    iconCheck.classList.remove('hidden');
+                    btn.classList.add('border-green-500/50');
+
+                    setTimeout(() => {
+                        iconCopy.classList.remove('hidden');
+                        iconCheck.classList.add('hidden');
+                        btn.classList.remove('border-green-500/50');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Gagal menyalin: ', err);
+                    alert('Gagal menyalin kode.');
+                });
+            }
+        }
+
         // Libraries Logic
         function openLibraries() {
             librariesModal.classList.remove('hidden');
@@ -492,8 +539,8 @@ if (typeof gsap !== 'undefined') {
             const js = jsEditor.value;
             const libs = libContent.value;
             
-            // Auto-detect Babel for JSX support
-            const scriptType = libs.includes('babel') ? 'type="text/babel"' : '';
+            // Update: Add data-presets for TypeScript support
+            const scriptType = libs.includes('babel') ? 'type="text/babel" data-presets="react,typescript"' : '';
 
             const source = `
                 <!DOCTYPE html>
@@ -540,8 +587,8 @@ if (typeof gsap !== 'undefined') {
             const js = jsEditor.value;
             const libs = libContent.value;
 
-            // Auto-detect Babel for JSX support
-            const scriptType = libs.includes('babel') ? 'type="text/babel"' : '';
+            // Update: Add data-presets for TypeScript support
+            const scriptType = libs.includes('babel') ? 'type="text/babel" data-presets="react,typescript"' : '';
 
             const fullSource = `<!DOCTYPE html>
 <html lang="en">
@@ -612,8 +659,8 @@ ${js}
             localStorage.setItem('lc_js', js);
             localStorage.setItem('lc_libs', libs);
 
-            // Auto-detect Babel for JSX support
-            const scriptType = libs.includes('babel') ? 'type="text/babel"' : '';
+            // Update: Add data-presets for TypeScript support
+            const scriptType = libs.includes('babel') ? 'type="text/babel" data-presets="react,typescript"' : '';
 
             const source = `
                 <!DOCTYPE html>
