@@ -56,12 +56,21 @@
             <h1 class="font-bold text-lg tracking-tight hidden md:block">Live<span class="text-sky-500">Compiler</span></h1>
         </div>
         
-        <div class="flex gap-2 overflow-x-auto">
-            <button onclick="triggerUpload()" class="px-3 py-1.5 text-xs font-medium bg-rose-600 hover:bg-rose-500 text-white rounded shadow-lg shadow-rose-900/20 transition-all flex items-center gap-1">
+        <div class="flex gap-2 overflow-x-auto items-center">
+            <!-- Upload Button -->
+            <button onclick="triggerUpload()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
                 Import
+            </button>
+
+            <!-- Library Button (NEW) -->
+            <button onclick="openLibraries()" class="px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-500 text-white rounded shadow-lg shadow-amber-900/20 transition-all flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                Libraries
             </button>
 
             <button onclick="resetCode()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-red-900/50 text-red-400 hover:text-red-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
@@ -139,6 +148,42 @@
 
     </main>
 
+    <!-- Libraries Modal -->
+    <div id="libraries-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-lg w-full max-w-lg shadow-2xl">
+            <div class="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-950 rounded-t-lg">
+                <h3 class="font-bold text-white flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    External Libraries
+                </h3>
+                <button onclick="closeLibraries()" class="text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-slate-400 mb-4">Tambahkan link CSS atau JS eksternal di sini. Konten ini akan dimasukkan ke dalam <code class="bg-slate-800 px-1 rounded text-sky-400">&lt;head&gt;</code>.</p>
+                
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button onclick="addLib('gsap')" class="px-2 py-1 text-xs bg-green-900/30 border border-green-700 hover:bg-green-900/50 text-green-400 rounded transition">+ GSAP</button>
+                    <button onclick="addLib('tailwind')" class="px-2 py-1 text-xs bg-sky-900/30 border border-sky-700 hover:bg-sky-900/50 text-sky-400 rounded transition">+ Tailwind</button>
+                    <button onclick="addLib('bootstrap')" class="px-2 py-1 text-xs bg-purple-900/30 border border-purple-700 hover:bg-purple-900/50 text-purple-400 rounded transition">+ Bootstrap</button>
+                    <button onclick="addLib('fontawesome')" class="px-2 py-1 text-xs bg-blue-900/30 border border-blue-700 hover:bg-blue-900/50 text-blue-400 rounded transition">+ FontAwesome</button>
+                    <button onclick="addLib('jquery')" class="px-2 py-1 text-xs bg-orange-900/30 border border-orange-700 hover:bg-orange-900/50 text-orange-400 rounded transition">+ jQuery</button>
+                </div>
+
+                <textarea id="lib-content" class="w-full h-40 bg-[#0f172a] border border-slate-700 rounded text-slate-300 p-3 code-font text-xs outline-none focus:border-sky-500 resize-none leading-relaxed" placeholder="<script src='...'></script>&#10;<link rel='stylesheet' href='...'>"></textarea>
+                
+                <div class="flex justify-end mt-4">
+                    <button onclick="saveLibraries()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white text-sm font-medium rounded transition">Simpan & Jalankan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Full Script Modal -->
     <div id="source-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-lg w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl">
@@ -182,13 +227,13 @@
     </div>
 
     <script>
-        // Default Code
-        const defaultHTML = `<!-- Contoh Struktur HTML -->
+        // Default Code with GSAP Example
+        const defaultHTML = `<!-- Contoh Struktur HTML dengan Animasi -->
 <div class="container">
-  <h1>Halo, Dunia!</h1>
-  <p>Coba ubah teks ini di editor.</p>
-  <button id="clickBtn">Klik Saya</button>
-  <div id="output"></div>
+  <h1 class="title">Halo, Dunia!</h1>
+  <p class="subtitle">Animasi dengan GSAP</p>
+  <div class="box"></div>
+  <button id="animBtn">Animasi Ulang</button>
 </div>`;
 
         const defaultCSS = `/* Styling Halaman */
@@ -199,53 +244,65 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: #0f172a;
+  color: white;
 }
 
 .container {
-  background: white;
+  background: #1e293b;
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   text-align: center;
   width: 90%;
   max-width: 400px;
+  border: 1px solid #334155;
 }
 
-h1 { color: #2563eb; }
+.title { color: #38bdf8; }
+.subtitle { color: #94a3b8; margin-bottom: 20px; }
+
+.box {
+  width: 50px;
+  height: 50px;
+  background: #f43f5e;
+  margin: 20px auto;
+  border-radius: 8px;
+}
 
 button {
-  background: #2563eb;
-  color: white;
+  background: #38bdf8;
+  color: #0f172a;
   border: none;
   padding: 10px 20px;
   border-radius: 6px;
   cursor: pointer;
-  font-weight: 600;
-  transition: transform 0.1s;
-}
-
-button:active {
-  transform: scale(0.95);
-}
-
-#output {
-  margin-top: 15px;
   font-weight: bold;
-  color: #059669;
-}`;
+}
+button:hover { background: #7dd3fc; }`;
 
-        const defaultJS = `// Logika Interaksi
-const btn = document.getElementById('clickBtn');
-const output = document.getElementById('output');
+        const defaultJS = `// Pastikan library GSAP sudah ditambahkan di menu "Libraries"
+// Jika belum, klik tombol Libraries > + GSAP > Simpan
 
-btn.addEventListener('click', () => {
-  const time = new Date().toLocaleTimeString();
-  output.textContent = 'Tombol diklik pada: ' + time;
+if (typeof gsap !== 'undefined') {
+  // Animasi awal
+  gsap.from(".container", { duration: 1, y: -50, opacity: 0, ease: "bounce" });
+  gsap.from(".box", { duration: 1, rotation: 360, scale: 0, delay: 0.5 });
   
-  // Efek konfeti sederhana (console log)
-  console.log("Klik berhasil!");
-});`;
+  // Interaksi tombol
+  document.getElementById('animBtn').addEventListener('click', () => {
+    gsap.to(".box", { 
+      duration: 0.5, 
+      rotation: "+=360", 
+      scale: 1.2, 
+      yoyo: true, 
+      repeat: 1 
+    });
+  });
+} else {
+  document.querySelector('.subtitle').textContent = "GSAP Library belum dimuat!";
+  document.querySelector('.subtitle').style.color = "red";
+  console.error("GSAP not found. Please add it via the Libraries menu.");
+}`;
 
         // Elements
         const htmlEditor = document.getElementById('editor-html');
@@ -261,6 +318,10 @@ btn.addEventListener('click', () => {
         const fullscreenFrame = document.getElementById('fullscreen-frame');
         
         const fileUploadInput = document.getElementById('file-upload');
+        
+        // Library Elements
+        const librariesModal = document.getElementById('libraries-modal');
+        const libContent = document.getElementById('lib-content');
 
         // Tab Switching Logic
         function switchTab(type) {
@@ -287,6 +348,10 @@ btn.addEventListener('click', () => {
             htmlEditor.value = localStorage.getItem('lc_html') || defaultHTML;
             cssEditor.value = localStorage.getItem('lc_css') || defaultCSS;
             jsEditor.value = localStorage.getItem('lc_js') || defaultJS;
+            libContent.value = localStorage.getItem('lc_libs') || '';
+            
+            // If empty libs but default JS uses gsap, maybe hint or add it? 
+            // For now, let's just run.
             updatePreview();
         }
 
@@ -296,9 +361,57 @@ btn.addEventListener('click', () => {
                 htmlEditor.value = defaultHTML;
                 cssEditor.value = defaultCSS;
                 jsEditor.value = defaultJS;
+                // Optional: Reset libs too or keep them? Let's keep them for convenience.
                 updatePreview();
             }
         }
+
+        // Libraries Logic
+        function openLibraries() {
+            librariesModal.classList.remove('hidden');
+        }
+
+        function closeLibraries() {
+            librariesModal.classList.add('hidden');
+        }
+
+        function addLib(type) {
+            let tag = '';
+            switch(type) {
+                case 'gsap':
+                    tag = '<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"><\/script>';
+                    break;
+                case 'tailwind':
+                    tag = '<script src="https://cdn.tailwindcss.com"><\/script>';
+                    break;
+                case 'bootstrap':
+                    tag = '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">';
+                    break;
+                case 'fontawesome':
+                    tag = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">';
+                    break;
+                case 'jquery':
+                    tag = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>';
+                    break;
+            }
+            
+            if (libContent.value.indexOf(tag) === -1) {
+                libContent.value += (libContent.value ? '\n' : '') + tag;
+            }
+        }
+
+        function saveLibraries() {
+            localStorage.setItem('lc_libs', libContent.value);
+            closeLibraries();
+            updatePreview();
+        }
+
+        // Close libraries when clicking outside
+        librariesModal.addEventListener('click', (e) => {
+            if (e.target === librariesModal) {
+                closeLibraries();
+            }
+        });
 
         // Upload/Import Logic
         function triggerUpload() {
@@ -317,45 +430,51 @@ btn.addEventListener('click', () => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(content, 'text/html');
 
-                // 1. Extract CSS from <style> tags
+                // Extract Libraries (simple heuristic: scripts with src or links with rel=stylesheet in head)
+                const headChildren = doc.head.children;
+                let libs = '';
+                for(let el of headChildren) {
+                    if ((el.tagName === 'SCRIPT' && el.src) || (el.tagName === 'LINK' && el.rel === 'stylesheet')) {
+                        libs += el.outerHTML + '\n';
+                    }
+                }
+                
+                // Extract CSS
                 const styles = doc.querySelectorAll('style');
                 let cssContent = '';
                 styles.forEach(style => {
                     cssContent += style.innerHTML + '\n\n';
-                    style.remove(); // Remove from DOM so it doesn't end up in HTML editor
+                    style.remove();
                 });
 
-                // 2. Extract JS from <script> tags (ignoring src links if simple)
+                // Extract JS
                 const scripts = doc.querySelectorAll('script');
                 let jsContent = '';
                 scripts.forEach(script => {
                     if (!script.src) {
                          jsContent += script.innerHTML + '\n\n';
-                         script.remove(); // Remove from DOM
+                         script.remove();
                     }
                 });
 
-                // 3. Extract remaining Body HTML
-                // Note: doc.body might be null if the imported file is partial, handle gracefully
+                // Extract Body
                 let htmlContent = "";
                 if (doc.body) {
-                    // Trim empty lines to make it cleaner
                     htmlContent = doc.body.innerHTML.replace(/^\s*[\r\n]/gm, ''); 
                 } else {
-                    htmlContent = doc.documentElement.innerHTML; // Fallback
+                    htmlContent = doc.documentElement.innerHTML;
                 }
 
-                // Update Editors
                 htmlEditor.value = htmlContent.trim();
                 cssEditor.value = cssContent.trim();
                 jsEditor.value = jsContent.trim();
+                libContent.value = libs.trim();
 
-                // Clear input value so same file can be selected again if needed
                 input.value = '';
-
-                // Run preview
+                
+                saveLibraries(); // Save the imported libs
                 updatePreview();
-                alert('File berhasil diimpor dan dipecah ke editor!');
+                alert('File berhasil diimpor!');
             };
             reader.readAsText(file);
         }
@@ -365,11 +484,13 @@ btn.addEventListener('click', () => {
             const html = htmlEditor.value;
             const css = cssEditor.value;
             const js = jsEditor.value;
+            const libs = libContent.value;
 
             const source = `
                 <!DOCTYPE html>
                 <html>
                 <head>
+                    ${libs}
                     <style>${css}</style>
                 </head>
                 <body>
@@ -397,7 +518,6 @@ btn.addEventListener('click', () => {
             fullscreenModal.classList.add('hidden');
         }
 
-        // Handle Escape key to close fullscreen
         document.addEventListener('keydown', function(event) {
             if (event.key === "Escape" && !fullscreenModal.classList.contains('hidden')) {
                 closeFullscreen();
@@ -409,6 +529,7 @@ btn.addEventListener('click', () => {
             const html = htmlEditor.value;
             const css = cssEditor.value;
             const js = jsEditor.value;
+            const libs = libContent.value;
 
             const fullSource = `<!DOCTYPE html>
 <html lang="en">
@@ -416,6 +537,7 @@ btn.addEventListener('click', () => {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Exported Project</title>
+  ${libs}
   <style>
 ${css}
   </style>
@@ -440,7 +562,6 @@ ${js}
         function copySource() {
             fullSourceArea.select();
             document.execCommand('copy');
-            // Visual feedback could be added here
             const btn = document.querySelector('button[onclick="copySource()"]');
             const originalText = btn.innerText;
             btn.innerText = "Tersalin!";
@@ -454,16 +575,13 @@ ${js}
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'project.html'; // Nama file default
+            a.download = 'project.html';
             document.body.appendChild(a);
             a.click();
-            
-            // Cleanup
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
 
-        // Close modal when clicking outside
         sourceModal.addEventListener('click', (e) => {
             if (e.target === sourceModal) {
                 closeModal();
@@ -475,17 +593,18 @@ ${js}
             const html = htmlEditor.value;
             const css = cssEditor.value;
             const js = jsEditor.value;
+            const libs = libContent.value;
 
-            // Save to local storage
             localStorage.setItem('lc_html', html);
             localStorage.setItem('lc_css', css);
             localStorage.setItem('lc_js', js);
+            localStorage.setItem('lc_libs', libs);
 
-            // Construct the source document
             const source = `
                 <!DOCTYPE html>
                 <html>
                 <head>
+                    ${libs}
                     <style>${css}</style>
                 </head>
                 <body>
@@ -501,7 +620,6 @@ ${js}
                 </html>
             `;
 
-            // Inject into iframe
             const iframeDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
             iframeDoc.open();
             iframeDoc.write(source);
@@ -510,7 +628,6 @@ ${js}
             statusMsg.textContent = "Diperbarui: " + new Date().toLocaleTimeString();
         }
 
-        // Debounce function to prevent rapid refreshes
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
@@ -523,30 +640,24 @@ ${js}
             };
         }
 
-        // Attach listeners with debounce
-        const debouncedUpdate = debounce(updatePreview, 800); // 800ms delay
+        const debouncedUpdate = debounce(updatePreview, 800);
 
         htmlEditor.addEventListener('input', debouncedUpdate);
         cssEditor.addEventListener('input', debouncedUpdate);
         jsEditor.addEventListener('input', debouncedUpdate);
 
-        // Allow Tab key in textareas
         document.querySelectorAll('textarea').forEach(textarea => {
             textarea.addEventListener('keydown', function(e) {
                 if (e.key === 'Tab') {
                     e.preventDefault();
                     const start = this.selectionStart;
                     const end = this.selectionEnd;
-
-                    // Insert 2 spaces for tab
                     this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
-
                     this.selectionStart = this.selectionEnd = start + 2;
                 }
             });
         });
 
-        // Run Init
         init();
 
     </script>
