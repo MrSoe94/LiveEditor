@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML JS Live Compiler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Custom Scrollbar for editors */
+        textarea::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 5px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        .tab-active {
+            background-color: #1e293b; /* slate-800 */
+            color: #38bdf8; /* sky-400 */
+            border-bottom: 2px solid #38bdf8;
+        }
+        .tab-inactive {
+            color: #94a3b8; /* slate-400 */
+            background-color: #0f172a; /* slate-900 */
+        }
+        .tab-inactive:hover {
+            background-color: #1e293b;
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="h-14 bg-slate-950 border-b border-slate-800 flex items-center justify-between px-4 shrink-0">
+        <div class="flex items-center gap-2">
+            <!-- Icon Code -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            <h1 class="font-bold text-lg tracking-tight">Live<span class="text-sky-500">Compiler</span></h1>
+        </div>
+        
+        <div class="flex gap-2">
+            <button onclick="resetCode()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-red-900/50 text-red-400 hover:text-red-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Reset
+            </button>
+            <button onclick="updatePreview()" class="px-3 py-1.5 text-xs font-medium bg-sky-600 hover:bg-sky-500 text-white rounded shadow-lg shadow-sky-900/20 transition-all flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Run Manual
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        
+        <!-- Editor Section -->
+        <div class="w-full lg:w-1/2 flex flex-col border-r border-slate-800 bg-slate-900">
+            <!-- Tabs -->
+            <div class="flex border-b border-slate-800 shrink-0">
+                <button onclick="switchTab('html')" id="tab-html" class="tab-active flex-1 py-3 text-sm font-medium transition-colors flex justify-center items-center gap-2">
+                    <span class="text-orange-500 font-bold">&lt;/&gt;</span> HTML
+                </button>
+                <button onclick="switchTab('css')" id="tab-css" class="tab-inactive flex-1 py-3 text-sm font-medium transition-colors flex justify-center items-center gap-2">
+                    <span class="text-blue-400 font-bold">#</span> CSS
+                </button>
+                <button onclick="switchTab('js')" id="tab-js" class="tab-inactive flex-1 py-3 text-sm font-medium transition-colors flex justify-center items-center gap-2">
+                    <span class="text-yellow-400 font-bold">{ }</span> JS
+                </button>
+            </div>
+
+            <!-- Editor Areas -->
+            <div class="relative flex-1 bg-[#1e293b]">
+                <!-- HTML Editor -->
+                <textarea id="editor-html" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-4 code-font text-sm outline-none resize-none leading-relaxed" spellcheck="false" placeholder="<!-- Tulis HTML di sini -->"></textarea>
+                
+                <!-- CSS Editor (Hidden by default) -->
+                <textarea id="editor-css" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-4 code-font text-sm outline-none resize-none leading-relaxed hidden" spellcheck="false" placeholder="/* Tulis CSS di sini */"></textarea>
+                
+                <!-- JS Editor (Hidden by default) -->
+                <textarea id="editor-js" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-4 code-font text-sm outline-none resize-none leading-relaxed hidden" spellcheck="false" placeholder="// Tulis JavaScript di sini"></textarea>
+            </div>
+            
+            <!-- Status Bar -->
+            <div class="h-8 bg-slate-950 border-t border-slate-800 flex items-center px-4 text-xs text-slate-500 justify-between shrink-0">
+                <span id="status-msg">Siap</span>
+                <span>Auto-save: Aktif</span>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="w-full lg:w-1/2 flex flex-col bg-white h-1/2 lg:h-full relative">
+            <div class="absolute top-0 left-0 bg-slate-200 text-slate-600 px-2 py-1 text-[10px] font-bold uppercase tracking-wider z-10 rounded-br shadow-sm">
+                Preview
+            </div>
+            <iframe id="preview-frame" class="w-full h-full bg-white border-none" sandbox="allow-scripts allow-modals allow-same-origin"></iframe>
+        </div>
+
+    </main>
+
+    <script>
+        // Default Code
+        const defaultHTML = `<!-- Contoh Struktur HTML -->
+<div class="container">
+  <h1>Halo, Dunia!</h1>
+  <p>Coba ubah teks ini di editor.</p>
+  <button id="clickBtn">Klik Saya</button>
+  <div id="output"></div>
+</div>`;
+
+        const defaultCSS = `/* Styling Halaman */
+body {
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+}
+
+h1 { color: #2563eb; }
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.1s;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+#output {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #059669;
+}`;
+
+        const defaultJS = `// Logika Interaksi
+const btn = document.getElementById('clickBtn');
+const output = document.getElementById('output');
+
+btn.addEventListener('click', () => {
+  const time = new Date().toLocaleTimeString();
+  output.textContent = 'Tombol diklik pada: ' + time;
+  
+  // Efek konfeti sederhana (console log)
+  console.log("Klik berhasil!");
+});`;
+
+        // Elements
+        const htmlEditor = document.getElementById('editor-html');
+        const cssEditor = document.getElementById('editor-css');
+        const jsEditor = document.getElementById('editor-js');
+        const previewFrame = document.getElementById('preview-frame');
+        const statusMsg = document.getElementById('status-msg');
+
+        // Tab Switching Logic
+        function switchTab(type) {
+            // Hide all editors
+            document.querySelectorAll('.editor-area').forEach(el => el.classList.add('hidden'));
+            
+            // Reset tab styles
+            document.querySelectorAll('[id^="tab-"]').forEach(el => {
+                el.classList.remove('tab-active');
+                el.classList.add('tab-inactive');
+            });
+
+            // Show selected editor
+            document.getElementById(`editor-${type}`).classList.remove('hidden');
+            
+            // Highlight selected tab
+            const activeTab = document.getElementById(`tab-${type}`);
+            activeTab.classList.remove('tab-inactive');
+            activeTab.classList.add('tab-active');
+        }
+
+        // Initialize from LocalStorage or Defaults
+        function init() {
+            htmlEditor.value = localStorage.getItem('lc_html') || defaultHTML;
+            cssEditor.value = localStorage.getItem('lc_css') || defaultCSS;
+            jsEditor.value = localStorage.getItem('lc_js') || defaultJS;
+            updatePreview();
+        }
+
+        // Reset Code
+        function resetCode() {
+            if(confirm('Apakah Anda yakin ingin mereset kode ke default? Kode saat ini akan hilang.')) {
+                htmlEditor.value = defaultHTML;
+                cssEditor.value = defaultCSS;
+                jsEditor.value = defaultJS;
+                updatePreview();
+            }
+        }
+
+        // Core Compiler Logic
+        function updatePreview() {
+            const html = htmlEditor.value;
+            const css = cssEditor.value;
+            const js = jsEditor.value;
+
+            // Save to local storage
+            localStorage.setItem('lc_html', html);
+            localStorage.setItem('lc_css', css);
+            localStorage.setItem('lc_js', js);
+
+            // Construct the source document
+            const source = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>${css}</style>
+                </head>
+                <body>
+                    ${html}
+                    <script>
+                        try {
+                            ${js}
+                        } catch (err) {
+                            document.body.innerHTML += '<div style="color:red; background:#fee; padding:10px; border:1px solid red; margin-top:20px;">Javascript Error: ' + err.message + '</div>';
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            // Inject into iframe
+            const iframeDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(source);
+            iframeDoc.close();
+
+            statusMsg.textContent = "Diperbarui: " + new Date().toLocaleTimeString();
+        }
+
+        // Debounce function to prevent rapid refreshes
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Attach listeners with debounce
+        const debouncedUpdate = debounce(updatePreview, 800); // 800ms delay
+
+        htmlEditor.addEventListener('input', debouncedUpdate);
+        cssEditor.addEventListener('input', debouncedUpdate);
+        jsEditor.addEventListener('input', debouncedUpdate);
+
+        // Allow Tab key in textareas
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+
+                    // Insert 2 spaces for tab
+                    this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
+
+                    this.selectionStart = this.selectionEnd = start + 2;
+                }
+            });
+        });
+
+        // Run Init
+        init();
+
+    </script>
+</body>
+</html>
