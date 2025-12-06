@@ -135,6 +135,12 @@
             <div class="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-950 rounded-t-lg">
                 <h3 class="font-bold text-white">Full Source Code</h3>
                 <div class="flex gap-2">
+                    <button onclick="downloadSource()" class="px-3 py-1.5 text-xs font-medium bg-green-600 hover:bg-green-500 text-white rounded shadow-lg shadow-green-900/20 transition-all flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download .html
+                    </button>
                     <button onclick="copySource()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-sky-400 rounded border border-slate-600 transition-colors">
                         Salin Kode
                     </button>
@@ -363,10 +369,26 @@ ${js}
             fullSourceArea.select();
             document.execCommand('copy');
             // Visual feedback could be added here
-            const btn = document.querySelector('#source-modal button:first-of-type');
-            const originalText = btn.textContent;
-            btn.textContent = "Tersalin!";
-            setTimeout(() => btn.textContent = originalText, 1500);
+            const btn = document.querySelector('button[onclick="copySource()"]');
+            const originalText = btn.innerText;
+            btn.innerText = "Tersalin!";
+            setTimeout(() => btn.innerText = originalText, 1500);
+        }
+
+        function downloadSource() {
+            const content = fullSourceArea.value;
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'project.html'; // Nama file default
+            document.body.appendChild(a);
+            a.click();
+            
+            // Cleanup
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         // Close modal when clicking outside
