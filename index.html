@@ -122,7 +122,37 @@
 
             <!-- Editor Areas -->
             <div class="relative flex-1 bg-[#1e293b] group">
-                <!-- Copy Button (New) -->
+                <!-- HTML Preprocessor Selector (Updated) -->
+                <div id="preprocessor-control-html" class="absolute top-4 right-14 z-20">
+                    <select id="html-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm">
+                        <option value="html">HTML</option>
+                        <option value="markdown">Markdown</option>
+                        <option value="pug">Pug</option>
+                        <option value="haml">Haml</option>
+                        <option value="slim">Slim</option>
+                    </select>
+                </div>
+
+                <!-- CSS Preprocessor Selector -->
+                <div id="preprocessor-control-css" class="absolute top-4 right-14 z-20 hidden">
+                    <select id="css-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm">
+                        <option value="css">CSS</option>
+                        <option value="scss">SCSS</option>
+                        <option value="less">LESS</option>
+                    </select>
+                </div>
+
+                <!-- JS Preprocessor Selector -->
+                <div id="preprocessor-control-js" class="absolute top-4 right-14 z-20 hidden">
+                    <select id="js-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm">
+                        <option value="js">JavaScript</option>
+                        <option value="babel">Babel (ES6+)</option>
+                        <option value="typescript">TypeScript</option>
+                        <option value="coffeescript">CoffeeScript</option>
+                    </select>
+                </div>
+
+                <!-- Copy Button -->
                 <button onclick="copyCurrentCode(this)" class="absolute top-4 right-4 z-10 p-2 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 backdrop-blur-sm rounded-lg transition-all opacity-0 group-hover:opacity-100 border border-slate-700 shadow-lg" title="Salin Kode">
                     <!-- Icon Copy -->
                     <svg id="icon-copy" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -206,7 +236,7 @@
                     </div>
                 </div>
 
-                <!-- NEW: Add External URL Section -->
+                <!-- Add External URL Section -->
                 <div class="mb-4 pt-4 border-t border-slate-700">
                     <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Add External Stylesheet / Script (URL)</label>
                     <div class="flex gap-2">
@@ -350,7 +380,7 @@ if (typeof gsap !== 'undefined') {
 }`;
 
         // Variables declared at top scope
-        let htmlEditor, cssEditor, jsEditor, previewFrame, statusMsg, sourceModal, fullSourceArea, fullscreenModal, fullscreenFrame, fileUploadInput, librariesModal, libContent;
+        let htmlEditor, cssEditor, jsEditor, previewFrame, statusMsg, sourceModal, fullSourceArea, fullscreenModal, fullscreenFrame, fileUploadInput, librariesModal, libContent, cssPreprocessorSelect, cssPreprocessorControl, jsPreprocessorSelect, jsPreprocessorControl, htmlPreprocessorSelect, htmlPreprocessorControl;
 
         // Initialize elements - moved to a function for safety
         function initElements() {
@@ -370,6 +400,15 @@ if (typeof gsap !== 'undefined') {
              
              librariesModal = document.getElementById('libraries-modal');
              libContent = document.getElementById('lib-content');
+
+             cssPreprocessorSelect = document.getElementById('css-preprocessor');
+             cssPreprocessorControl = document.getElementById('preprocessor-control-css');
+             
+             jsPreprocessorSelect = document.getElementById('js-preprocessor');
+             jsPreprocessorControl = document.getElementById('preprocessor-control-js');
+
+             htmlPreprocessorSelect = document.getElementById('html-preprocessor');
+             htmlPreprocessorControl = document.getElementById('preprocessor-control-html');
         }
 
         // Tab Switching Logic
@@ -390,6 +429,19 @@ if (typeof gsap !== 'undefined') {
             const activeTab = document.getElementById(`tab-${type}`);
             activeTab.classList.remove('tab-inactive');
             activeTab.classList.add('tab-active');
+
+            // Show preprocessor controls
+            if (cssPreprocessorControl) cssPreprocessorControl.classList.add('hidden');
+            if (jsPreprocessorControl) jsPreprocessorControl.classList.add('hidden');
+            if (htmlPreprocessorControl) htmlPreprocessorControl.classList.add('hidden');
+
+            if (type === 'css') {
+                if(cssPreprocessorControl) cssPreprocessorControl.classList.remove('hidden');
+            } else if (type === 'js') {
+                if(jsPreprocessorControl) jsPreprocessorControl.classList.remove('hidden');
+            } else if (type === 'html') {
+                if(htmlPreprocessorControl) htmlPreprocessorControl.classList.remove('hidden');
+            }
         }
 
         // Initialize from LocalStorage or Defaults
@@ -402,7 +454,18 @@ if (typeof gsap !== 'undefined') {
             jsEditor.value = localStorage.getItem('lc_js') || defaultJS;
             libContent.value = localStorage.getItem('lc_libs') || '';
             
-            updatePreview();
+            if (cssPreprocessorSelect) {
+                cssPreprocessorSelect.value = localStorage.getItem('lc_css_preprocessor') || 'css';
+            }
+            if (jsPreprocessorSelect) {
+                jsPreprocessorSelect.value = localStorage.getItem('lc_js_preprocessor') || 'js';
+            }
+            if (htmlPreprocessorSelect) {
+                htmlPreprocessorSelect.value = localStorage.getItem('lc_html_preprocessor') || 'html';
+            }
+            
+            // Initial render without delay
+            updatePreview().catch(console.error);
         }
 
         // Reset Code
@@ -412,7 +475,7 @@ if (typeof gsap !== 'undefined') {
                 cssEditor.value = defaultCSS;
                 jsEditor.value = defaultJS;
                 // Optional: Reset libs too or keep them? Let's keep them for convenience.
-                updatePreview();
+                updatePreview().catch(console.error);
             }
         }
 
@@ -533,8 +596,6 @@ if (typeof gsap !== 'undefined') {
             if (type === 'css') {
                 tag = `<link rel="stylesheet" href="${url}">`;
             } else if (type === 'js') {
-                // Check if it's a module based on extension (simple heuristic) or user intent? 
-                // For safety/standard, we use normal script. User can edit to type="module" if needed in textarea.
                 tag = `<script src="${url}"><\/script>`;
             }
 
@@ -556,7 +617,7 @@ if (typeof gsap !== 'undefined') {
         function saveLibraries() {
             localStorage.setItem('lc_libs', libContent.value);
             closeLibraries();
-            updatePreview();
+            updatePreview().catch(console.error);
         }
 
         // Upload/Import Logic
@@ -619,48 +680,337 @@ if (typeof gsap !== 'undefined') {
                 input.value = '';
                 
                 saveLibraries(); // Save the imported libs
-                updatePreview();
+                updatePreview().catch(console.error);
                 alert('File berhasil diimpor!');
             };
             reader.readAsText(file);
         }
 
+        // Helper: Load Script Asynchronously with CORS
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.crossOrigin = "anonymous"; // Added for better error reporting
+                script.onload = resolve;
+                script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+                document.head.appendChild(script);
+            });
+        }
+
+        // Helper: Compile CSS
+        async function compileCSS(code, type) {
+            if (type === 'css') return code;
+            
+            if (type === 'scss') {
+                if (!window.Sass) {
+                    statusMsg.textContent = "Loading Sass Compiler...";
+                    try {
+                        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.11.1/sass.sync.min.js');
+                    } catch(e) {
+                        return `/* Gagal memuat Sass: ${e} */`;
+                    }
+                }
+                
+                return new Promise(resolve => {
+                    Sass.compile(code, (result) => {
+                        if (result.status === 0) {
+                            resolve(result.text);
+                        } else {
+                            resolve(`/* Sass Error Line ${result.line}: ${result.message} */ \n body:before { content: "Sass Error: ${result.message}"; color: red; background: white; padding: 10px; display: block; }`);
+                        }
+                    });
+                });
+            }
+
+            if (type === 'less') {
+                if (!window.less) {
+                    statusMsg.textContent = "Loading Less Compiler...";
+                    try {
+                        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/less.js/4.1.3/less.min.js');
+                    } catch(e) {
+                         return `/* Gagal memuat Less: ${e} */`;
+                    }
+                }
+
+                return new Promise(resolve => {
+                    less.render(code, (e, output) => {
+                        if (e) {
+                             resolve(`/* Less Error: ${e.message} */ \n body:before { content: "Less Error: ${e.message}"; color: red; background: white; padding: 10px; display: block; }`);
+                        } else {
+                            resolve(output.css);
+                        }
+                    });
+                });
+            }
+
+            return code;
+        }
+
+        // Helper: Compile JS
+        async function compileJS(code, type) {
+            if (type === 'js') return code;
+
+            // Shared Babel Loader for TS and Babel modes
+            if (type === 'typescript' || type === 'babel') {
+                if (!window.Babel) {
+                    statusMsg.textContent = "Loading Babel...";
+                    try {
+                         await loadScript('https://unpkg.com/@babel/standalone/babel.min.js');
+                    } catch(e) {
+                        return `console.error("Failed to load Babel: ${e.message}");`;
+                    }
+                }
+            }
+
+            if (type === 'babel') {
+                try {
+                    // Compile ES6+/JSX to standard JS
+                    const res = Babel.transform(code, { presets: ['env', 'react'], filename: 'script.js' });
+                    return res.code;
+                } catch (e) {
+                     return `console.error("Babel Error: ${e.message.replace(/"/g, '\\"')}");`;
+                }
+            }
+
+            if (type === 'typescript') {
+                try {
+                    const res = Babel.transform(code, { presets: ['typescript', 'react', 'env'], filename: 'script.ts' });
+                    return res.code;
+                } catch (e) {
+                     return `console.error("TypeScript Error: ${e.message.replace(/"/g, '\\"')}");`;
+                }
+            }
+
+            if (type === 'coffeescript') {
+                if (!window.CoffeeScript) {
+                    statusMsg.textContent = "Loading CoffeeScript...";
+                    try {
+                        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/coffeescript/2.7.0/coffeescript.min.js');
+                    } catch(e) {
+                        return `console.error("Failed to load CoffeeScript: ${e.message}");`;
+                    }
+                }
+                try {
+                    return CoffeeScript.compile(code, { bare: true });
+                } catch (e) {
+                     return `console.error("CoffeeScript Error: ${e.message.replace(/"/g, '\\"')}");`;
+                }
+            }
+
+            return code;
+        }
+
+        // Helper: Compile Slim Lite (Browser Implementation)
+        function compileSlimLite(code) {
+            const lines = code.split('\n');
+            let output = '';
+            const stack = []; // { indent: number, tag: string }
+
+            lines.forEach((line, index) => {
+                if (!line.trim()) return;
+
+                // Determine indentation
+                const indentMatch = line.match(/^\s*/);
+                const indent = indentMatch ? indentMatch[0].length : 0;
+                const content = line.trim();
+                
+                // Close tags based on indentation
+                while (stack.length > 0 && stack[stack.length - 1].indent >= indent) {
+                    output += `</${stack.pop().tag}>`;
+                }
+
+                // Handle special characters
+                if (content.startsWith('|')) {
+                    output += content.substring(1) + ' ';
+                    return;
+                }
+                
+                if (content.startsWith('/')) {
+                    // Comment - ignore
+                    return;
+                }
+                
+                if (content.startsWith('=')) {
+                    // Output - wrap in span or just text
+                     output += content.substring(1) + ' ';
+                     return;
+                }
+
+                // Regex: tag#id.class or #id.class or .class
+                // Captures: 1:tag, 2:id, 3:classes, 5:text
+                const match = content.match(/^([a-z0-9:-]+)?(#[a-z0-9:-]+)?((\.[a-z0-9:-]+)*)(?:\s+(.*))?$/i);
+                
+                if (match) {
+                    let tag = match[1] || 'div';
+                    const id = match[2];
+                    const classes = match[3];
+                    const text = match[5];
+
+                    // If line starts with . or # and no tag is specified, it's a div
+                    if (!match[1] && (id || classes)) {
+                        tag = 'div';
+                    }
+
+                    let attributes = '';
+                    if (id) attributes += ` id="${id.substring(1)}"`;
+                    if (classes) {
+                        const classList = classes.split('.').filter(c => c).join(' ');
+                        attributes += ` class="${classList}"`;
+                    }
+
+                    output += `<${tag}${attributes}>`;
+
+                    if (text) {
+                        if (text.startsWith('=')) {
+                             // Mimic ruby output
+                             output += text.substring(1); 
+                        } else {
+                             output += text;
+                        }
+                        output += `</${tag}>`;
+                    } else {
+                        stack.push({ indent: indent, tag: tag });
+                    }
+                } else {
+                    // Fallback for plain text or unknown lines not matching tag syntax
+                    // Usually Slim treats unknown lines as text if they don't look like tags? 
+                    // Or they must be prefixed with |
+                    // For this lite parser, if it fails regex but has text, we treat as text.
+                    output += content + ' ';
+                }
+            });
+
+            // Close remaining tags
+            while (stack.length > 0) {
+                output += `</${stack.pop().tag}>`;
+            }
+
+            return output;
+        }
+
+        // Helper: Compile HTML (Updated with Haml & Slim)
+        async function compileHTML(code, type) {
+            if (type === 'html') return code;
+
+            if (type === 'markdown') {
+                if (!window.marked) {
+                    statusMsg.textContent = "Loading Markdown Compiler...";
+                    try {
+                        await loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js');
+                    } catch(e) {
+                        return `<!-- Failed to load marked: ${e.message} -->`;
+                    }
+                }
+                try {
+                    return marked.parse(code);
+                } catch(e) {
+                    return `<!-- Markdown Error: ${e.message} -->`;
+                }
+            }
+
+            if (type === 'pug') {
+                if (!window.pug) {
+                    statusMsg.textContent = "Loading Pug Compiler...";
+                    try {
+                        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pug/3.0.2/pug.min.js');
+                    } catch(e) {
+                        return `<!-- Failed to load Pug: ${e.message} -->`;
+                    }
+                }
+                try {
+                    return pug.render(code);
+                } catch(e) {
+                    return `<!-- Pug Error: ${e.message} -->`;
+                }
+            }
+
+            if (type === 'haml') {
+                if (!window.haml) {
+                    statusMsg.textContent = "Loading Haml Compiler...";
+                    try {
+                        // Load clientside-haml-js
+                        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/clientside-haml-js/1.0.0/haml.min.js');
+                    } catch(e) {
+                        return `<!-- Failed to load Haml: ${e.message} -->`;
+                    }
+                }
+                try {
+                    // clientside-haml-js exposes 'haml.compileHaml' which returns a function
+                    return haml.compileHaml({source: code})();
+                } catch(e) {
+                    return `<!-- Haml Error: ${e.message} -->`;
+                }
+            }
+
+            if (type === 'slim') {
+                // Custom Lite Parser
+                try {
+                   return compileSlimLite(code);
+                } catch(e) {
+                   return `<!-- Slim Lite Error: ${e.message} -->`;
+                }
+            }
+
+            return code;
+        }
+
         // Fullscreen Logic
         function openFullscreen() {
-            const html = htmlEditor.value;
-            const css = cssEditor.value;
-            const js = jsEditor.value;
-            const libs = libContent.value;
+            const rawCss = cssEditor.value;
+            const rawJs = jsEditor.value;
+            const rawHtml = htmlEditor.value;
+            const cssPrep = cssPreprocessorSelect ? cssPreprocessorSelect.value : 'css';
+            const jsPrep = jsPreprocessorSelect ? jsPreprocessorSelect.value : 'js';
+            const htmlPrep = htmlPreprocessorSelect ? htmlPreprocessorSelect.value : 'html';
             
-            // Update: Add data-presets for TypeScript support
-            const scriptType = libs.includes('babel') ? 'type="text/babel" data-presets="react,typescript"' : '';
+            Promise.all([
+                compileCSS(rawCss, cssPrep),
+                compileJS(rawJs, jsPrep),
+                compileHTML(rawHtml, htmlPrep)
+            ]).then(([css, js, html]) => {
+                const libs = libContent.value;
+                
+                let scriptAttr = '';
+                if (jsPrep === 'js' && libs.includes('babel')) {
+                    scriptAttr = 'type="text/babel" data-presets="react,typescript"';
+                }
 
-            const source = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    ${libs}
-                    <style>${css}</style>
-                </head>
-                <body>
-                    ${html}
-                    <script ${scriptType}>
-                        try {
-                            ${js}
-                        } catch (err) {
-                            document.body.innerHTML += '<div style="color:red; background:#fee; padding:10px; border:1px solid red; margin-top:20px;">Javascript Error: ' + err.message + '</div>';
-                        }
-                    <\/script>
-                </body>
-                </html>
-            `;
+                const source = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        ${libs}
+                        <style>${css}</style>
+                        <script>
+                            window.onerror = function(msg, url, line, col, error) {
+                                document.body.innerHTML += '<div style="color:red; background:#fee; padding:10px; border:1px solid red; margin-top:20px; font-family:monospace;">Global Error: ' + msg + ' (Line: ' + line + ')</div>';
+                                return false; 
+                            };
+                        <\/script>
+                    </head>
+                    <body>
+                        ${html}
+                        <script ${scriptAttr}>
+                            try {
+                                ${js}
+                            } catch (err) {
+                                document.body.innerHTML += '<div style="color:red; background:#fee; padding:10px; border:1px solid red; margin-top:20px;">Runtime Error: ' + err.message + '</div>';
+                            }
+                        <\/script>
+                    </body>
+                    </html>
+                `;
 
-            const iframeDoc = fullscreenFrame.contentDocument || fullscreenFrame.contentWindow.document;
-            iframeDoc.open();
-            iframeDoc.write(source);
-            iframeDoc.close();
+                const iframeDoc = fullscreenFrame.contentDocument || fullscreenFrame.contentWindow.document;
+                iframeDoc.open();
+                iframeDoc.write(source);
+                iframeDoc.close();
 
-            fullscreenModal.classList.remove('hidden');
+                fullscreenModal.classList.remove('hidden');
+            }).catch(err => {
+                alert("Error preparing fullscreen: " + err.message);
+            });
         }
 
         function closeFullscreen() {
@@ -675,13 +1025,34 @@ if (typeof gsap !== 'undefined') {
 
         // Full Script Preview Logic
         function showFullSource() {
-            const html = htmlEditor.value;
-            const css = cssEditor.value;
-            const js = jsEditor.value;
+            const rawHtml = htmlEditor.value;
+            const rawCss = cssEditor.value;
+            const rawJs = jsEditor.value;
             const libs = libContent.value;
+            
+            const cssPrep = cssPreprocessorSelect ? cssPreprocessorSelect.value : 'css';
+            const jsPrep = jsPreprocessorSelect ? jsPreprocessorSelect.value : 'js';
+            const htmlPrep = htmlPreprocessorSelect ? htmlPreprocessorSelect.value : 'html';
 
-            // Update: Add data-presets for TypeScript support
-            const scriptType = libs.includes('babel') ? 'type="text/babel" data-presets="react,typescript"' : '';
+            let displayCss = rawCss;
+            if(cssPrep !== 'css') {
+                displayCss = `/* PREPROCESSOR: ${cssPrep.toUpperCase()} - CODE IS NOT COMPILED CSS */\n` + rawCss;
+            }
+
+            let displayJs = rawJs;
+            if(jsPrep !== 'js') {
+                displayJs = `/* PREPROCESSOR: ${jsPrep.toUpperCase()} - CODE IS NOT COMPILED JS */\n` + rawJs;
+            }
+
+            let displayHtml = rawHtml;
+            if(htmlPrep !== 'html') {
+                displayHtml = `<!-- PREPROCESSOR: ${htmlPrep.toUpperCase()} - CODE IS NOT COMPILED HTML -->\n` + rawHtml;
+            }
+
+            let scriptAttr = '';
+            if (jsPrep === 'js' && libs.includes('babel')) {
+                scriptAttr = 'type="text/babel" data-presets="react,typescript"';
+            }
 
             const fullSource = `<!DOCTYPE html>
 <html lang="en">
@@ -691,14 +1062,14 @@ if (typeof gsap !== 'undefined') {
   <title>Exported Project</title>
   ${libs}
   <style>
-${css}
+${displayCss}
   </style>
 </head>
 <body>
-${html}
+${displayHtml}
 
-  <script ${scriptType}>
-${js}
+  <script ${scriptAttr}>
+${displayJs}
   <\/script>
 </body>
 </html>`;
@@ -734,54 +1105,104 @@ ${js}
             URL.revokeObjectURL(url);
         }
 
-        // Core Compiler Logic
-        function updatePreview() {
-            // Safety check: ensure previewFrame exists
-            if (!previewFrame) {
-                previewFrame = document.getElementById('preview-frame');
-                if (!previewFrame) return; // Exit if still null
+        // Core Compiler Logic - NOW ASYNC with Error Handling
+        async function updatePreview() {
+            try {
+                // Safety check: ensure previewFrame exists
+                if (!previewFrame) {
+                    previewFrame = document.getElementById('preview-frame');
+                    if (!previewFrame) return; // Exit if still null
+                }
+
+                const rawHtml = htmlEditor.value;
+                const rawCss = cssEditor.value;
+                const rawJs = jsEditor.value;
+                const libs = libContent.value;
+                const cssPrepType = cssPreprocessorSelect ? cssPreprocessorSelect.value : 'css';
+                const jsPrepType = jsPreprocessorSelect ? jsPreprocessorSelect.value : 'js';
+                const htmlPrepType = htmlPreprocessorSelect ? htmlPreprocessorSelect.value : 'html';
+
+                localStorage.setItem('lc_html', rawHtml);
+                localStorage.setItem('lc_css', rawCss);
+                localStorage.setItem('lc_js', rawJs);
+                localStorage.setItem('lc_libs', libs);
+                localStorage.setItem('lc_css_preprocessor', cssPrepType);
+                localStorage.setItem('lc_js_preprocessor', jsPrepType);
+                localStorage.setItem('lc_html_preprocessor', htmlPrepType);
+
+            // Update Placeholder
+            if(cssPrepType === 'scss') cssEditor.placeholder = "/* Tulis SCSS di sini */";
+            else if(cssPrepType === 'less') cssEditor.placeholder = "/* Tulis LESS di sini */";
+            else cssEditor.placeholder = "/* Tulis CSS di sini */";
+
+            if(jsPrepType === 'typescript') jsEditor.placeholder = "// Tulis TypeScript di sini (const x: number = 10;)";
+            else if(jsPrepType === 'babel') jsEditor.placeholder = "// Tulis Modern JS/JSX di sini (const App = () => <h1>Hi</h1>)";
+            else if(jsPrepType === 'coffeescript') jsEditor.placeholder = "# Tulis CoffeeScript di sini (square = (x) -> x * x)";
+            else jsEditor.placeholder = "// Tulis JavaScript di sini";
+
+            if(htmlPrepType === 'markdown') htmlEditor.placeholder = "<!-- Tulis Markdown di sini (# Hello World) -->";
+            else if(htmlPrepType === 'pug') htmlEditor.placeholder = "//- Tulis Pug di sini (h1 Hello World)";
+            else if(htmlPrepType === 'haml') htmlEditor.placeholder = "%h1 Hello Haml\n.container\n  %p Tulis Haml di sini...";
+            else if(htmlPrepType === 'slim') htmlEditor.placeholder = "h1 Hello Slim\n.container\n  p Tulis Slim di sini...";
+            else htmlEditor.placeholder = "<!-- Tulis HTML di sini -->";
+
+
+            // Compile Everything if needed
+            let compiledCss = rawCss;
+            let compiledJs = rawJs;
+            let compiledHtml = rawHtml;
+
+                if (rawCss.trim()) {
+                     compiledCss = await compileCSS(rawCss, cssPrepType);
+                }
+                if (rawJs.trim()) {
+                     compiledJs = await compileJS(rawJs, jsPrepType);
+                }
+                if (rawHtml.trim()) {
+                     compiledHtml = await compileHTML(rawHtml, htmlPrepType);
+                }
+
+                let scriptAttr = '';
+                if (jsPrepType === 'js' && libs.includes('babel')) {
+                    scriptAttr = 'type="text/babel" data-presets="react,typescript"';
+                }
+
+                const source = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        ${libs}
+                        <style>${compiledCss}</style>
+                        <script>
+                            window.onerror = function(msg, url, line, col, error) {
+                                document.body.innerHTML += '<div style="color:red; background:#fee; padding:10px; border:1px solid red; margin-top:20px; font-family:monospace;">Global Error: ' + msg + ' (Line: ' + line + ')</div>';
+                                return false; 
+                            };
+                        <\/script>
+                    </head>
+                    <body>
+                        ${compiledHtml}
+                        <script ${scriptAttr}>
+                            try {
+                                ${compiledJs}
+                            } catch (err) {
+                                document.body.innerHTML += '<div style="color:red; background:#fee; padding:10px; border:1px solid red; margin-top:20px;">Runtime Error: ' + err.message + '</div>';
+                            }
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+
+                const iframeDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+                iframeDoc.open();
+                iframeDoc.write(source);
+                iframeDoc.close();
+
+                statusMsg.textContent = "Diperbarui: " + new Date().toLocaleTimeString();
+            } catch (error) {
+                console.error("Preview Update Error:", error);
+                statusMsg.textContent = "Error: " + error.message;
             }
-
-            const html = htmlEditor.value;
-            const css = cssEditor.value;
-            const js = jsEditor.value;
-            const libs = libContent.value;
-
-            localStorage.setItem('lc_html', html);
-            localStorage.setItem('lc_css', css);
-            localStorage.setItem('lc_js', js);
-            localStorage.setItem('lc_libs', libs);
-
-            // Update: Add data-presets for TypeScript support
-            const scriptType = libs.includes('babel') ? 'type="text/babel" data-presets="react,typescript"' : '';
-
-            const source = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    ${libs}
-                    <style>${css}</style>
-                </head>
-                <body>
-                    ${html}
-                    <script ${scriptType}>
-                        try {
-                            ${js}
-                        } catch (err) {
-                            // Note: Babel compilation errors appear in console
-                            document.body.innerHTML += '<div style="color:red; background:#fee; padding:10px; border:1px solid red; margin-top:20px;">Javascript Error: ' + err.message + '</div>';
-                        }
-                    <\/script>
-                </body>
-                </html>
-            `;
-
-            const iframeDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
-            iframeDoc.open();
-            iframeDoc.write(source);
-            iframeDoc.close();
-
-            statusMsg.textContent = "Diperbarui: " + new Date().toLocaleTimeString();
         }
 
         function debounce(func, wait) {
@@ -789,7 +1210,7 @@ ${js}
             return function executedFunction(...args) {
                 const later = () => {
                     clearTimeout(timeout);
-                    func(...args);
+                    func(...args).catch(err => console.error("Debounce error:", err));
                 };
                 clearTimeout(timeout);
                 timeout = setTimeout(later, wait);
@@ -800,7 +1221,7 @@ ${js}
         function startApp() {
              initElements();
 
-             // Add Event Listeners for Modals HERE (inside startApp, after initElements)
+             // Add Event Listeners for Modals
              if (sourceModal) {
                  sourceModal.addEventListener('click', (e) => {
                     if (e.target === sourceModal) {
