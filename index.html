@@ -225,6 +225,15 @@
                         </div>
                     </div>
 
+                    <!-- CSS Base & Resets (BARU) -->
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">CSS Base & Resets</span>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="addLib('normalize')" class="px-2 py-1 text-xs bg-pink-900/30 border border-pink-700 hover:bg-pink-900/50 text-pink-400 rounded transition">+ Normalize.css</button>
+                            <button onclick="addLib('reset')" class="px-2 py-1 text-xs bg-rose-900/30 border border-rose-700 hover:bg-rose-900/50 text-rose-400 rounded transition">+ Reset.css</button>
+                        </div>
+                    </div>
+
                     <!-- Meta & Head Tags Group -->
                     <div>
                         <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Meta & Head Tags</span>
@@ -545,6 +554,15 @@ if (typeof gsap !== 'undefined') {
         function addLib(type) {
             let tag = '';
             switch(type) {
+                // === CSS Base & Reset ===
+                case 'normalize':
+                    tag = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">';
+                    break;
+                case 'reset':
+                    tag = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.2/reset.min.css">';
+                    break;
+
+                // === Existing Libraries ===
                 case 'react':
                     tag = '<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin><\/script>\n' +
                           '<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin><\/script>\n' +
@@ -565,7 +583,7 @@ if (typeof gsap !== 'undefined') {
                 case 'jquery':
                     tag = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>';
                     break;
-                // NEW HEAD TAGS
+                // === Meta Tags ===
                 case 'viewport':
                     tag = '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
                     break;
