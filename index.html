@@ -499,7 +499,7 @@ if (typeof gsap !== 'undefined') {
             }
         }
 
-        // Clear Code (Fungsi Baru)
+        // Clear Code
         function clearCode() {
             if(confirm('Apakah Anda yakin ingin menghapus SEMUA kode (HTML, CSS, JS)? Editor akan menjadi kosong.')) {
                 htmlEditor.value = '';
@@ -1215,8 +1215,34 @@ ${displayJs}
                 }
 
                 let scriptAttr = '';
+                let scriptContent = '';
+                
+                // Detect ES Modules (import/export)
+                const isModule = compiledJs.includes('import ') || compiledJs.includes('export ');
+
                 if (jsPrepType === 'js' && libs.includes('babel')) {
                     scriptAttr = 'type="text/babel" data-presets="react,typescript"';
+                    scriptContent = `
+                        try {
+                            ${compiledJs}
+                        } catch (err) {
+                            document.body.innerHTML += '<div style="color:red; background:#fee; padding:10px; border:1px solid red; margin-top:20px;">Runtime Error: ' + err.message + '</div>';
+                        }
+                    `;
+                } else if (isModule) {
+                    scriptAttr = 'type="module"';
+                    // Modules cannot be wrapped in try/catch block directly
+                    // We attach error listener to window instead
+                    scriptContent = compiledJs;
+                } else {
+                    // Standard JS
+                    scriptContent = `
+                        try {
+                            ${compiledJs}
+                        } catch (err) {
+                            document.body.innerHTML += '<div style="color:red; background:#fee; padding:10px; border:1px solid red; margin-top:20px;">Runtime Error: ' + err.message + '</div>';
+                        }
+                    `;
                 }
 
                 const source = `
@@ -1235,11 +1261,7 @@ ${displayJs}
                     <body>
                         ${compiledHtml}
                         <script ${scriptAttr}>
-                            try {
-                                ${compiledJs}
-                            } catch (err) {
-                                document.body.innerHTML += '<div style="color:red; background:#fee; padding:10px; border:1px solid red; margin-top:20px;">Runtime Error: ' + err.message + '</div>';
-                            }
+                            ${scriptContent}
                         <\/script>
                     </body>
                     </html>
