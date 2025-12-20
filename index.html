@@ -65,7 +65,7 @@
                 Import
             </button>
 
-            <!-- Head / Settings Button (Updated) -->
+            <!-- Head / Settings Button -->
             <button onclick="openLibraries()" class="px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-500 text-white rounded shadow-lg shadow-amber-900/20 transition-all flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -74,6 +74,7 @@
                 Head / Libs
             </button>
 
+            <!-- Clear Button -->
             <button onclick="clearCode()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-orange-900/50 text-orange-400 hover:text-orange-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-9.172a2 2 0 00-1.414.586L3 12z" />
@@ -81,18 +82,23 @@
                 Clear
             </button>
 
+            <!-- Reset Button -->
             <button onclick="resetCode()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-red-900/50 text-red-400 hover:text-red-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 Reset
             </button>
+
+            <!-- Full Script Button -->
             <button onclick="showFullSource()" class="px-3 py-1.5 text-xs font-medium bg-purple-600 hover:bg-purple-500 text-white rounded shadow-lg shadow-purple-900/20 transition-all flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
                 Full Script
             </button>
+
+            <!-- Fullscreen Button -->
             <button onclick="openFullscreen()" class="px-3 py-1.5 text-xs font-medium bg-teal-600 hover:bg-teal-500 text-white rounded shadow-lg shadow-teal-900/20 transition-all flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
@@ -100,8 +106,7 @@
                 Fullscreen
             </button>
 
-            <!-- TOMBOL CENTER (DEFAULT ACTIVE) -->
-            <!-- Updated classes to match active state: bg-indigo-600 text-white border-indigo-500 -->
+            <!-- Center Button (Default Active) -->
             <button onclick="toggleCenter()" id="btn-center" class="px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded border border-indigo-500 shadow-lg shadow-indigo-900/20 transition-colors flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /> 
@@ -110,6 +115,7 @@
                 Center
             </button>
 
+            <!-- Run Button -->
             <button onclick="updatePreview()" class="px-3 py-1.5 text-xs font-medium bg-sky-600 hover:bg-sky-500 text-white rounded shadow-lg shadow-sky-900/20 transition-all flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -211,6 +217,7 @@
 
     <!-- Libraries/Head Modal -->
     <div id="libraries-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <!-- Modal Container with max-height and flex-col -->
         <div class="bg-slate-900 border border-slate-700 rounded-lg w-full max-w-lg shadow-2xl max-h-[90vh] flex flex-col">
             <div class="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-950 rounded-t-lg shrink-0">
                 <h3 class="font-bold text-white flex items-center gap-2">
@@ -226,6 +233,7 @@
                     </svg>
                 </button>
             </div>
+            <!-- Scrollable Content -->
             <div class="p-6 overflow-y-auto">
                 <p class="text-sm text-slate-400 mb-4">Tambahkan library eksternal, font, atau tag meta untuk <code class="bg-slate-800 px-1 rounded text-sky-400">&lt;head&gt;</code> di sini.</p>
                 
@@ -243,7 +251,7 @@
                         </div>
                     </div>
 
-                    <!-- CSS Base & Resets (Updated) -->
+                    <!-- CSS Base & Resets & Prefixing -->
                     <div>
                         <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">CSS Base, Resets & Prefixing</span>
                         <div class="flex flex-wrap gap-2">
@@ -283,8 +291,15 @@
 
                 <textarea id="lib-content" class="w-full h-40 bg-[#0f172a] border border-slate-700 rounded text-slate-300 p-3 code-font text-xs outline-none focus:border-sky-500 resize-none leading-relaxed" placeholder="<script src='...'></script>&#10;<link rel='stylesheet' href='...'>&#10;<meta name='viewport' content='...'>"></textarea>
                 
-                <div class="flex justify-end mt-4 pt-4 border-t border-slate-700 sticky bottom-0 bg-slate-900/95 backdrop-blur">
-                    <button onclick="saveLibraries()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white text-sm font-medium rounded transition">Simpan & Jalankan</button>
+                <!-- Footer Modal Updated: Added Clear Button -->
+                <div class="flex justify-between items-center mt-4 pt-4 border-t border-slate-700 sticky bottom-0 bg-slate-900/95 backdrop-blur">
+                    <button onclick="clearLibraries()" class="px-3 py-2 bg-slate-800 hover:bg-red-900/30 text-red-400 hover:text-red-300 border border-slate-600 hover:border-red-800/50 text-xs font-medium rounded transition flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Clear All
+                    </button>
+                    <button onclick="saveLibraries()" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white text-sm font-medium rounded transition shadow-lg shadow-sky-900/20">Simpan & Jalankan</button>
                 </div>
             </div>
         </div>
@@ -413,7 +428,7 @@ if (typeof gsap !== 'undefined') {
         // Variables declared at top scope
         let htmlEditor, cssEditor, jsEditor, previewFrame, statusMsg, sourceModal, fullSourceArea, fullscreenModal, fullscreenFrame, fileUploadInput, librariesModal, libContent, cssPreprocessorSelect, cssPreprocessorControl, jsPreprocessorSelect, jsPreprocessorControl, htmlPreprocessorSelect, htmlPreprocessorControl;
         
-        // Variable state for Centering (DEFAULT TRUE)
+        // Variable state for Centering (Default True)
         let isCentered = true;
 
         // Initialize elements - moved to a function for safety
@@ -489,7 +504,6 @@ if (typeof gsap !== 'undefined') {
                 btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-500', 'shadow-lg', 'shadow-indigo-900/20');
             } else {
                 // Inactive Style
-                // Updated inactive style to match removed active classes correctly
                 btn.classList.add('bg-slate-800', 'text-slate-300', 'border-slate-700');
                 btn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-500', 'shadow-lg', 'shadow-indigo-900/20');
             }
@@ -607,7 +621,7 @@ if (typeof gsap !== 'undefined') {
 
         function addLib(type) {
             let tag = '';
-            // Define strict strings for removal matching
+            // Define strict strings for removal matching (legacy)
             const normalizeTag = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">';
             const resetTag = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.2/reset.min.css">';
 
@@ -623,11 +637,36 @@ if (typeof gsap !== 'undefined') {
                     tag = '<script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"><\/script>';
                     break;
                 case 'neither':
-                    // Remove both Normalize and Reset strings
-                    libContent.value = libContent.value.replace(normalizeTag, '').replace(resetTag, '').trim();
-                    // Clean up potential double newlines
-                    libContent.value = libContent.value.replace(/\n\s*\n/g, '\n');
-                    return; // Exit function, don't add tag
+                    // UPDATE: Menggunakan Regex Replace agar penghapusan lebih pasti
+                    let currentContent = libContent.value;
+                    
+                    // Hapus baris yang mengandung normalize.min.css (case insensitive, global)
+                    currentContent = currentContent.replace(/.*normalize\.min\.css.*\n?/gi, "");
+                    
+                    // Hapus baris yang mengandung reset.min.css (case insensitive, global)
+                    currentContent = currentContent.replace(/.*reset\.min\.css.*\n?/gi, "");
+                    
+                    // Update value textarea dan trim spasi berlebih
+                    libContent.value = currentContent.trim();
+                    
+                    // Efek Visual Tombol yang Stabil
+                    const btn = document.querySelector('button[onclick="addLib(\'neither\')"]');
+                    if(btn) {
+                        if (btn.dataset.isAnimating) return;
+                        
+                        btn.dataset.isAnimating = "true";
+                        const originalHTML = '<span class="font-bold text-red-400">×</span> Remove Base/Reset';
+                        
+                        btn.innerHTML = '<span class="font-bold text-green-400">✓</span> Removed!';
+                        btn.classList.add('border-green-500', 'text-green-300');
+                        
+                        setTimeout(() => {
+                            btn.innerHTML = originalHTML;
+                            btn.classList.remove('border-green-500', 'text-green-300');
+                            delete btn.dataset.isAnimating; 
+                        }, 1000);
+                    }
+                    return; // Keluar fungsi
 
                 // === Existing Libraries ===
                 case 'react':
@@ -696,6 +735,15 @@ if (typeof gsap !== 'undefined') {
                 setTimeout(() => urlInput.placeholder = originalPlaceholder, 1500);
             } else {
                 alert('URL ini sepertinya sudah ada di daftar.');
+            }
+        }
+
+        // FUNGSI BARU: Clear Libraries
+        function clearLibraries() {
+            if (libContent.value.trim() === '') return; // Tidak ada yang perlu dihapus
+            
+            if(confirm('Apakah Anda yakin ingin menghapus semua library dan pengaturan head?')) {
+                libContent.value = '';
             }
         }
 
@@ -1176,7 +1224,7 @@ ${displayJs}
             setTimeout(() => btn.innerText = originalText, 1500);
         }
 
-        // UPDATE: Fungsi Download dengan Custom Filename
+        // Custom Filename Download
         function downloadSource() {
             const content = fullSourceArea.value;
             const defaultName = 'project.html';
@@ -1234,7 +1282,7 @@ ${displayJs}
                 localStorage.setItem('lc_js_preprocessor', jsPrepType);
                 localStorage.setItem('lc_html_preprocessor', htmlPrepType);
 
-            // Update Placeholder
+            // Update Placeholder logic...
             if(cssPrepType === 'scss') cssEditor.placeholder = "/* Tulis SCSS di sini */";
             else if(cssPrepType === 'less') cssEditor.placeholder = "/* Tulis LESS di sini */";
             else cssEditor.placeholder = "/* Tulis CSS di sini */";
@@ -1260,7 +1308,7 @@ ${displayJs}
                      compiledCss = await compileCSS(rawCss, cssPrepType);
                 }
                 
-                // INJECT CENTER CSS IF ACTIVE (UPDATED)
+                // INJECT CENTER CSS IF ACTIVE
                 if (isCentered) {
                     compiledCss += `
                         /* Auto-Injected by LiveCompiler Center Mode */
@@ -1305,7 +1353,6 @@ ${displayJs}
                 } else if (isModule) {
                     scriptAttr = 'type="module"';
                     // Modules cannot be wrapped in try/catch block directly
-                    // We attach error listener to window instead
                     scriptContent = compiledJs;
                 } else {
                     // Standard JS
