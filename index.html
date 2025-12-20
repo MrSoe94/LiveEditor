@@ -1176,14 +1176,33 @@ ${displayJs}
             setTimeout(() => btn.innerText = originalText, 1500);
         }
 
+        // UPDATE: Fungsi Download dengan Custom Filename
         function downloadSource() {
             const content = fullSourceArea.value;
+            const defaultName = 'project.html';
+            
+            // Minta input nama file dari user
+            let fileName = prompt("Masukkan nama file untuk disimpan:", defaultName);
+            
+            // Jika user menekan Cancel, batalkan download
+            if (fileName === null) return; 
+            
+            // Jika input kosong, gunakan nama default
+            if (!fileName.trim()) {
+                fileName = defaultName;
+            }
+            
+            // Pastikan ekstensi file adalah .html
+            if (!fileName.toLowerCase().endsWith('.html') && !fileName.toLowerCase().endsWith('.htm')) {
+                fileName += '.html';
+            }
+
             const blob = new Blob([content], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'project.html';
+            a.download = fileName;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
