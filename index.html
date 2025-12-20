@@ -100,8 +100,9 @@
                 Fullscreen
             </button>
 
-            <!-- TOMBOL CENTER -->
-            <button onclick="toggleCenter()" id="btn-center" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
+            <!-- TOMBOL CENTER (DEFAULT ACTIVE) -->
+            <!-- Updated classes to match active state: bg-indigo-600 text-white border-indigo-500 -->
+            <button onclick="toggleCenter()" id="btn-center" class="px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded border border-indigo-500 shadow-lg shadow-indigo-900/20 transition-colors flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /> 
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -412,8 +413,8 @@ if (typeof gsap !== 'undefined') {
         // Variables declared at top scope
         let htmlEditor, cssEditor, jsEditor, previewFrame, statusMsg, sourceModal, fullSourceArea, fullscreenModal, fullscreenFrame, fileUploadInput, librariesModal, libContent, cssPreprocessorSelect, cssPreprocessorControl, jsPreprocessorSelect, jsPreprocessorControl, htmlPreprocessorSelect, htmlPreprocessorControl;
         
-        // Variable state for Centering
-        let isCentered = false;
+        // Variable state for Centering (DEFAULT TRUE)
+        let isCentered = true;
 
         // Initialize elements - moved to a function for safety
         function initElements() {
@@ -488,6 +489,7 @@ if (typeof gsap !== 'undefined') {
                 btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-500', 'shadow-lg', 'shadow-indigo-900/20');
             } else {
                 // Inactive Style
+                // Updated inactive style to match removed active classes correctly
                 btn.classList.add('bg-slate-800', 'text-slate-300', 'border-slate-700');
                 btn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-500', 'shadow-lg', 'shadow-indigo-900/20');
             }
@@ -1239,16 +1241,22 @@ ${displayJs}
                      compiledCss = await compileCSS(rawCss, cssPrepType);
                 }
                 
-                // INJECT CENTER CSS IF ACTIVE
+                // INJECT CENTER CSS IF ACTIVE (UPDATED)
                 if (isCentered) {
                     compiledCss += `
                         /* Auto-Injected by LiveCompiler Center Mode */
+                        html {
+                            height: 100% !important;
+                            width: 100% !important;
+                        }
                         body {
                             display: flex !important;
                             justify-content: center !important;
                             align-items: center !important;
                             min-height: 100vh !important;
+                            width: 100% !important;
                             margin: 0 !important;
+                            padding: 0 !important;
                         }
                     `;
                 }
