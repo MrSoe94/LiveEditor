@@ -1282,27 +1282,27 @@ ${displayJs}
                 localStorage.setItem('lc_js_preprocessor', jsPrepType);
                 localStorage.setItem('lc_html_preprocessor', htmlPrepType);
 
-            // Update Placeholder logic...
-            if(cssPrepType === 'scss') cssEditor.placeholder = "/* Tulis SCSS di sini */";
-            else if(cssPrepType === 'less') cssEditor.placeholder = "/* Tulis LESS di sini */";
-            else cssEditor.placeholder = "/* Tulis CSS di sini */";
+                // Update Placeholder logic (No changes needed here)
+                if(cssPrepType === 'scss') cssEditor.placeholder = "/* Tulis SCSS di sini */";
+                else if(cssPrepType === 'less') cssEditor.placeholder = "/* Tulis LESS di sini */";
+                else cssEditor.placeholder = "/* Tulis CSS di sini */";
 
-            if(jsPrepType === 'typescript') jsEditor.placeholder = "// Tulis TypeScript di sini (const x: number = 10;)";
-            else if(jsPrepType === 'babel') jsEditor.placeholder = "// Tulis Modern JS/JSX di sini (const App = () => <h1>Hi</h1>)";
-            else if(jsPrepType === 'coffeescript') jsEditor.placeholder = "# Tulis CoffeeScript di sini (square = (x) -> x * x)";
-            else jsEditor.placeholder = "// Tulis JavaScript di sini";
+                if(jsPrepType === 'typescript') jsEditor.placeholder = "// Tulis TypeScript di sini (const x: number = 10;)";
+                else if(jsPrepType === 'babel') jsEditor.placeholder = "// Tulis Modern JS/JSX di sini (const App = () => <h1>Hi</h1>)";
+                else if(jsPrepType === 'coffeescript') jsEditor.placeholder = "# Tulis CoffeeScript di sini (square = (x) -> x * x)";
+                else jsEditor.placeholder = "// Tulis JavaScript di sini";
 
-            if(htmlPrepType === 'markdown') htmlEditor.placeholder = "<!-- Tulis Markdown di sini (# Hello World) -->";
-            else if(htmlPrepType === 'pug') htmlEditor.placeholder = "//- Tulis Pug di sini (h1 Hello World)";
-            else if(htmlPrepType === 'haml') htmlEditor.placeholder = "%h1 Hello Haml\n.container\n  %p Tulis Haml di sini...";
-            else if(htmlPrepType === 'slim') htmlEditor.placeholder = "h1 Hello Slim\n.container\n  p Tulis Slim di sini...";
-            else htmlEditor.placeholder = "<!-- Tulis HTML di sini -->";
+                if(htmlPrepType === 'markdown') htmlEditor.placeholder = "<!-- Tulis Markdown di sini (# Hello World) -->";
+                else if(htmlPrepType === 'pug') htmlEditor.placeholder = "//- Tulis Pug di sini (h1 Hello World)";
+                else if(htmlPrepType === 'haml') htmlEditor.placeholder = "%h1 Hello Haml\n.container\n  %p Tulis Haml di sini...";
+                else if(htmlPrepType === 'slim') htmlEditor.placeholder = "h1 Hello Slim\n.container\n  p Tulis Slim di sini...";
+                else htmlEditor.placeholder = "<!-- Tulis HTML di sini -->";
 
 
-            // Compile Everything if needed
-            let compiledCss = rawCss;
-            let compiledJs = rawJs;
-            let compiledHtml = rawHtml;
+                // Compile Everything if needed
+                let compiledCss = rawCss;
+                let compiledJs = rawJs;
+                let compiledHtml = rawHtml;
 
                 if (rawCss.trim()) {
                      compiledCss = await compileCSS(rawCss, cssPrepType);
@@ -1341,6 +1341,21 @@ ${displayJs}
                 // Detect ES Modules (import/export)
                 const isModule = compiledJs.includes('import ') || compiledJs.includes('export ');
 
+                // IMPORT MAP GENERATOR (New Feature)
+                // Ini membantu browser menemukan 'three' saat di-import oleh library lain
+                let importMap = '';
+                if (isModule || libs.includes('three.js') || libs.includes('three.min.js')) {
+                    importMap = `
+                    <script type="importmap">
+                      {
+                        "imports": {
+                          "three": "https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js",
+                          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/"
+                        }
+                      }
+                    <\/script>`;
+                }
+
                 if (jsPrepType === 'js' && libs.includes('babel')) {
                     scriptAttr = 'type="text/babel" data-presets="react,typescript"';
                     scriptContent = `
@@ -1353,6 +1368,7 @@ ${displayJs}
                 } else if (isModule) {
                     scriptAttr = 'type="module"';
                     // Modules cannot be wrapped in try/catch block directly
+                    // We attach error listener to window instead
                     scriptContent = compiledJs;
                 } else {
                     // Standard JS
@@ -1370,6 +1386,7 @@ ${displayJs}
                     <html>
                     <head>
                         ${libs}
+                        ${importMap}
                         <style>${compiledCss}</style>
                         <script>
                             window.onerror = function(msg, url, line, col, error) {
