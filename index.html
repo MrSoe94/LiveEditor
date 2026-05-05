@@ -39,12 +39,32 @@
             color: #e2e8f0;
         }
 
-        .resizing {
+        /* Resizer states */
+        .resizing-h {
             cursor: col-resize !important;
             user-select: none !important;
         }
-        .resizing iframe {
+        .resizing-v {
+            cursor: row-resize !important;
+            user-select: none !important;
+        }
+        .resizing-h iframe, .resizing-v iframe {
             pointer-events: none;
+        }
+
+        /* Horizontal resizer (desktop) */
+        #resizer-h {
+            touch-action: none;
+        }
+
+        /* Vertical resizer (mobile) */
+        #resizer-v {
+            touch-action: none;
+        }
+        #resizer-v .resizer-grip {
+            width: 48px;
+            height: 4px;
+            border-radius: 999px;
         }
 
         /* Mobile optimizations */
@@ -53,12 +73,12 @@
                 font-size: 14px !important;
                 line-height: 1.6 !important;
             }
-            /* Prevent iOS zoom on input */
             select, input, textarea {
                 font-size: 16px;
             }
         }
     </style>
+<base target="_blank">
 </head>
 <body class="bg-slate-900 text-white h-screen flex flex-col overflow-hidden">
 
@@ -75,15 +95,6 @@
         </div>
         
         <div class="flex gap-1.5 lg:gap-2 overflow-x-auto items-center no-scrollbar px-1">
-            <!-- Mobile Toggle Preview -->
-            <button onclick="togglePreviewMobile()" id="btn-preview-mobile" class="lg:hidden px-2.5 py-1.5 text-xs font-medium bg-pink-600 hover:bg-pink-500 text-white rounded shadow-lg shadow-pink-900/20 transition-all flex items-center gap-1 shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                <span id="txt-preview-mobile">Preview</span>
-            </button>
-
             <button onclick="triggerUpload()" class="px-2.5 lg:px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors flex items-center gap-1 shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -149,7 +160,7 @@
     <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative" id="main-container">
         
         <!-- Editor Section -->
-        <div id="editor-panel" class="w-full flex flex-col bg-slate-900 lg:flex-shrink-0" style="width: 50%;">
+        <div id="editor-panel" class="w-full flex flex-col bg-slate-900 lg:flex-shrink-0" style="height: 60%; width: 50%;">
             <!-- Tabs -->
             <div class="flex border-b border-slate-800 shrink-0">
                 <button onclick="switchTab('html')" id="tab-html" class="tab-active flex-1 py-3 text-sm font-medium transition-colors flex justify-center items-center gap-2 min-h-[48px]">
@@ -212,13 +223,18 @@
             </div>
         </div>
 
-        <!-- Resizer Handle (Desktop only) -->
-        <div id="resizer" class="hidden lg:flex w-1.5 bg-slate-800 hover:bg-sky-500 cursor-col-resize items-center justify-center transition-colors z-20 relative group shrink-0">
+        <!-- Vertical Resizer (Mobile) -->
+        <div id="resizer-v" class="lg:hidden h-5 bg-slate-800 hover:bg-sky-500 cursor-row-resize flex items-center justify-center transition-colors z-20 relative group shrink-0 border-y border-slate-700">
+            <div class="resizer-grip bg-slate-600 group-hover:bg-sky-300 transition-colors"></div>
+        </div>
+
+        <!-- Horizontal Resizer (Desktop) -->
+        <div id="resizer-h" class="hidden lg:flex w-1.5 bg-slate-800 hover:bg-sky-500 cursor-col-resize items-center justify-center transition-colors z-20 relative group shrink-0">
             <div class="w-0.5 h-8 bg-slate-600 group-hover:bg-sky-300 rounded-full transition-colors"></div>
         </div>
 
         <!-- Preview Section -->
-        <div id="preview-panel" class="w-full flex flex-col bg-white relative lg:h-auto border-t lg:border-t-0 border-slate-800">
+        <div id="preview-panel" class="w-full flex-1 flex flex-col bg-white relative lg:h-auto border-t-0 border-slate-800">
             <div class="absolute top-0 left-0 bg-slate-200 text-slate-600 px-2 py-1 text-[10px] font-bold uppercase tracking-wider z-10 rounded-br shadow-sm pointer-events-none">
                 Preview
             </div>
@@ -428,11 +444,11 @@ if (typeof gsap !== 'undefined') {
 
         let htmlEditor, cssEditor, jsEditor, previewFrame, statusMsg, sourceModal, fullSourceArea, fullscreenModal, fullscreenFrame, fileUploadInput, librariesModal, libContent, cssPreprocessorSelect, cssPreprocessorControl, jsPreprocessorSelect, jsPreprocessorControl, htmlPreprocessorSelect, htmlPreprocessorControl;
         let isCentered = true;
-        let isPreviewVisibleMobile = true;
 
         // Resizer variables
-        let isResizing = false;
-        let mainContainer, editorPanel, resizerHandle;
+        let isResizingH = false;
+        let isResizingV = false;
+        let mainContainer, editorPanel, resizerH, resizerV;
 
         function initElements() {
              htmlEditor = document.getElementById('editor-html');
@@ -463,7 +479,8 @@ if (typeof gsap !== 'undefined') {
 
              mainContainer = document.getElementById('main-container');
              editorPanel = document.getElementById('editor-panel');
-             resizerHandle = document.getElementById('resizer');
+             resizerH = document.getElementById('resizer-h');
+             resizerV = document.getElementById('resizer-v');
         }
 
         function switchTab(type) {
@@ -503,11 +520,6 @@ if (typeof gsap !== 'undefined') {
             updatePreview().catch(console.error);
         }
 
-        function togglePreviewMobile() {
-            isPreviewVisibleMobile = !isPreviewVisibleMobile;
-            updateMobileLayout();
-        }
-
         function safeGetItem(key, fallback) {
             try {
                 const val = localStorage.getItem(key);
@@ -525,51 +537,21 @@ if (typeof gsap !== 'undefined') {
             }
         }
 
-        function updateMobileLayout() {
-            const isMobile = window.innerWidth < 1024;
-            const previewPanel = document.getElementById('preview-panel');
-            const btn = document.getElementById('btn-preview-mobile');
-            const txt = document.getElementById('txt-preview-mobile');
+        function applyLayout() {
+            const isDesktop = window.innerWidth >= 1024;
             
-            if (!editorPanel || !previewPanel) return;
+            if (!editorPanel) return;
 
-            if (!isMobile) {
-                previewPanel.classList.remove('hidden');
-                editorPanel.style.flex = '';
+            if (isDesktop) {
+                // Desktop: horizontal split
                 editorPanel.style.height = '';
-                editorPanel.style.width = safeGetItem('lc_split', '50') + '%';
-                previewPanel.style.flex = '';
-                previewPanel.style.height = '';
-                if (btn) {
-                    btn.classList.add('hidden');
-                }
-                return;
-            }
-
-            // Mobile mode
-            if (btn) btn.classList.remove('hidden');
-            editorPanel.style.width = '';
-            
-            if (isPreviewVisibleMobile) {
-                previewPanel.classList.remove('hidden');
-                editorPanel.style.flex = '3';
-                editorPanel.style.height = 'auto';
-                previewPanel.style.flex = '2';
-                previewPanel.style.height = 'auto';
-                if (btn) {
-                    btn.classList.add('bg-pink-600');
-                    btn.classList.remove('bg-slate-600');
-                }
-                if (txt) txt.textContent = 'Preview';
+                const savedH = safeGetItem('lc_split_h', '50');
+                editorPanel.style.width = savedH + '%';
             } else {
-                previewPanel.classList.add('hidden');
-                editorPanel.style.flex = '1';
-                editorPanel.style.height = '100%';
-                if (btn) {
-                    btn.classList.remove('bg-pink-600');
-                    btn.classList.add('bg-slate-600');
-                }
-                if (txt) txt.textContent = 'Editor';
+                // Mobile: vertical split
+                editorPanel.style.width = '';
+                const savedV = safeGetItem('lc_split_v', '60');
+                editorPanel.style.height = savedV + '%';
             }
         }
 
@@ -591,7 +573,7 @@ if (typeof gsap !== 'undefined') {
                 htmlPreprocessorSelect.value = safeGetItem('lc_html_preprocessor', 'html');
             }
 
-            updateMobileLayout();
+            applyLayout();
             updatePreview().catch(console.error);
         }
 
@@ -1425,20 +1407,21 @@ ${displayJs}
             };
         }
 
-        function initResizer() {
-            if (!resizerHandle || !editorPanel || !mainContainer) return;
+        // Horizontal Resizer (Desktop)
+        function initResizerH() {
+            if (!resizerH || !editorPanel || !mainContainer) return;
 
             const startResize = (e) => {
-                isResizing = true;
-                document.body.classList.add('resizing');
+                isResizingH = true;
+                document.body.classList.add('resizing-h');
                 e.preventDefault();
             };
 
-            resizerHandle.addEventListener('mousedown', startResize);
-            resizerHandle.addEventListener('touchstart', startResize, { passive: false });
+            resizerH.addEventListener('mousedown', startResize);
+            resizerH.addEventListener('touchstart', startResize, { passive: false });
 
             const onMove = (clientX) => {
-                if (!isResizing) return;
+                if (!isResizingH) return;
                 const rect = mainContainer.getBoundingClientRect();
                 let x = clientX - rect.left;
                 const minWidth = 200;
@@ -1451,17 +1434,62 @@ ${displayJs}
 
             document.addEventListener('mousemove', (e) => onMove(e.clientX));
             document.addEventListener('touchmove', (e) => {
-                if (isResizing) e.preventDefault();
+                if (isResizingH) e.preventDefault();
                 onMove(e.touches[0].clientX);
             }, { passive: false });
 
             const stopResize = () => {
-                if (!isResizing) return;
-                isResizing = false;
-                document.body.classList.remove('resizing');
+                if (!isResizingH) return;
+                isResizingH = false;
+                document.body.classList.remove('resizing-h');
                 const currentWidth = parseFloat(editorPanel.style.width);
                 if (!isNaN(currentWidth)) {
-                    safeSetItem('lc_split', currentWidth.toFixed(1));
+                    safeSetItem('lc_split_h', currentWidth.toFixed(1));
+                }
+            };
+
+            document.addEventListener('mouseup', stopResize);
+            document.addEventListener('touchend', stopResize);
+        }
+
+        // Vertical Resizer (Mobile)
+        function initResizerV() {
+            if (!resizerV || !editorPanel || !mainContainer) return;
+
+            const startResize = (e) => {
+                isResizingV = true;
+                document.body.classList.add('resizing-v');
+                e.preventDefault();
+            };
+
+            resizerV.addEventListener('mousedown', startResize);
+            resizerV.addEventListener('touchstart', startResize, { passive: false });
+
+            const onMove = (clientY) => {
+                if (!isResizingV) return;
+                const rect = mainContainer.getBoundingClientRect();
+                let y = clientY - rect.top;
+                const minHeight = 120;
+                const maxHeight = rect.height - 120;
+                if (y < minHeight) y = minHeight;
+                if (y > maxHeight) y = maxHeight;
+                const percent = (y / rect.height) * 100;
+                editorPanel.style.height = percent + '%';
+            };
+
+            document.addEventListener('mousemove', (e) => onMove(e.clientY));
+            document.addEventListener('touchmove', (e) => {
+                if (isResizingV) e.preventDefault();
+                onMove(e.touches[0].clientY);
+            }, { passive: false });
+
+            const stopResize = () => {
+                if (!isResizingV) return;
+                isResizingV = false;
+                document.body.classList.remove('resizing-v');
+                const currentHeight = parseFloat(editorPanel.style.height);
+                if (!isNaN(currentHeight)) {
+                    safeSetItem('lc_split_v', currentHeight.toFixed(1));
                 }
             };
 
@@ -1502,10 +1530,11 @@ ${displayJs}
              });
 
              window.addEventListener('resize', () => {
-                 updateMobileLayout();
+                 applyLayout();
              });
 
-             initResizer();
+             initResizerH();
+             initResizerV();
              init();
         }
 
