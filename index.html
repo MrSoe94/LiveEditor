@@ -10,7 +10,6 @@
         body { font-family: 'Inter', sans-serif; }
         .code-font { font-family: 'JetBrains Mono', monospace; }
         
-        /* Custom Scrollbar for editors */
         textarea::-webkit-scrollbar {
             width: 10px;
             height: 10px;
@@ -27,19 +26,20 @@
         }
 
         .tab-active {
-            background-color: #1e293b; /* slate-800 */
-            color: #38bdf8; /* sky-400 */
+            background-color: #1e293b;
+            color: #38bdf8;
             border-bottom: 2px solid #38bdf8;
         }
         .tab-inactive {
-            color: #94a3b8; /* slate-400 */
-            background-color: #0f172a; /* slate-900 */
+            color: #94a3b8;
+            background-color: #0f172a;
         }
         .tab-inactive:hover {
             background-color: #1e293b;
             color: #e2e8f0;
         }
     </style>
+<base target="_blank">
 </head>
 <body class="bg-slate-900 text-white h-screen flex flex-col overflow-hidden">
 
@@ -49,7 +49,6 @@
     <!-- Header -->
     <header class="h-14 bg-slate-950 border-b border-slate-800 flex items-center justify-between px-4 shrink-0">
         <div class="flex items-center gap-2">
-            <!-- Icon Code -->
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
             </svg>
@@ -57,7 +56,6 @@
         </div>
         
         <div class="flex gap-2 overflow-x-auto items-center">
-            <!-- Upload Button -->
             <button onclick="triggerUpload()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -65,7 +63,6 @@
                 Import
             </button>
 
-            <!-- Head / Settings Button -->
             <button onclick="openLibraries()" class="px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-500 text-white rounded shadow-lg shadow-amber-900/20 transition-all flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -74,7 +71,6 @@
                 Head / Libs
             </button>
 
-            <!-- Clear Button -->
             <button onclick="clearCode()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-orange-900/50 text-orange-400 hover:text-orange-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-9.172a2 2 0 00-1.414.586L3 12z" />
@@ -82,7 +78,6 @@
                 Clear
             </button>
 
-            <!-- Reset Button -->
             <button onclick="resetCode()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-red-900/50 text-red-400 hover:text-red-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -90,7 +85,6 @@
                 Reset
             </button>
 
-            <!-- Full Script Button -->
             <button onclick="showFullSource()" class="px-3 py-1.5 text-xs font-medium bg-purple-600 hover:bg-purple-500 text-white rounded shadow-lg shadow-purple-900/20 transition-all flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
@@ -98,7 +92,6 @@
                 Full Script
             </button>
 
-            <!-- Fullscreen Button -->
             <button onclick="openFullscreen()" class="px-3 py-1.5 text-xs font-medium bg-teal-600 hover:bg-teal-500 text-white rounded shadow-lg shadow-teal-900/20 transition-all flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
@@ -106,16 +99,14 @@
                 Fullscreen
             </button>
 
-            <!-- Center Button (Default Active) -->
             <button onclick="toggleCenter()" id="btn-center" class="px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded border border-indigo-500 shadow-lg shadow-indigo-900/20 transition-colors flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /> 
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 Center
             </button>
 
-            <!-- Run Button -->
             <button onclick="updatePreview()" class="px-3 py-1.5 text-xs font-medium bg-sky-600 hover:bg-sky-500 text-white rounded shadow-lg shadow-sky-900/20 transition-all flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -146,7 +137,6 @@
 
             <!-- Editor Areas -->
             <div class="relative flex-1 bg-[#1e293b] group">
-                <!-- HTML Preprocessor Selector -->
                 <div id="preprocessor-control-html" class="absolute top-4 right-14 z-20">
                     <select id="html-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm">
                         <option value="html">HTML</option>
@@ -157,7 +147,6 @@
                     </select>
                 </div>
 
-                <!-- CSS Preprocessor Selector -->
                 <div id="preprocessor-control-css" class="absolute top-4 right-14 z-20 hidden">
                     <select id="css-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm">
                         <option value="css">CSS</option>
@@ -166,7 +155,6 @@
                     </select>
                 </div>
 
-                <!-- JS Preprocessor Selector -->
                 <div id="preprocessor-control-js" class="absolute top-4 right-14 z-20 hidden">
                     <select id="js-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm">
                         <option value="js">JavaScript</option>
@@ -176,29 +164,20 @@
                     </select>
                 </div>
 
-                <!-- Copy Button -->
                 <button onclick="copyCurrentCode(this)" class="absolute top-4 right-4 z-10 p-2 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 backdrop-blur-sm rounded-lg transition-all opacity-0 group-hover:opacity-100 border border-slate-700 shadow-lg" title="Salin Kode">
-                    <!-- Icon Copy -->
                     <svg id="icon-copy" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
-                    <!-- Icon Check (Hidden by default) -->
                     <svg id="icon-check" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
                 </button>
 
-                <!-- HTML Editor -->
                 <textarea id="editor-html" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-4 code-font text-sm outline-none resize-none leading-relaxed" spellcheck="false" placeholder="<!-- Tulis HTML di sini -->"></textarea>
-                
-                <!-- CSS Editor (Hidden by default) -->
                 <textarea id="editor-css" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-4 code-font text-sm outline-none resize-none leading-relaxed hidden" spellcheck="false" placeholder="/* Tulis CSS di sini */"></textarea>
-                
-                <!-- JS Editor (Hidden by default) -->
                 <textarea id="editor-js" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-4 code-font text-sm outline-none resize-none leading-relaxed hidden" spellcheck="false" placeholder="// Tulis JavaScript di sini"></textarea>
             </div>
             
-            <!-- Status Bar -->
             <div class="h-8 bg-slate-950 border-t border-slate-800 flex items-center px-4 text-xs text-slate-500 justify-between shrink-0">
                 <span id="status-msg">Siap</span>
                 <span>Auto-save: Aktif</span>
@@ -217,7 +196,6 @@
 
     <!-- Libraries/Head Modal -->
     <div id="libraries-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <!-- Modal Container with max-height and flex-col -->
         <div class="bg-slate-900 border border-slate-700 rounded-lg w-full max-w-lg shadow-2xl max-h-[90vh] flex flex-col">
             <div class="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-950 rounded-t-lg shrink-0">
                 <h3 class="font-bold text-white flex items-center gap-2">
@@ -233,12 +211,10 @@
                     </svg>
                 </button>
             </div>
-            <!-- Scrollable Content -->
             <div class="p-6 overflow-y-auto">
                 <p class="text-sm text-slate-400 mb-4">Tambahkan library eksternal, font, atau tag meta untuk <code class="bg-slate-800 px-1 rounded text-sky-400">&lt;head&gt;</code> di sini.</p>
                 
                 <div class="space-y-4 mb-4">
-                    <!-- Libraries Group -->
                     <div>
                         <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Libraries</span>
                         <div class="flex flex-wrap gap-2">
@@ -251,7 +227,6 @@
                         </div>
                     </div>
 
-                    <!-- CSS Base & Resets & Prefixing -->
                     <div>
                         <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">CSS Base, Resets & Prefixing</span>
                         <div class="flex flex-wrap gap-2">
@@ -264,7 +239,6 @@
                         </div>
                     </div>
 
-                    <!-- Meta & Head Tags Group -->
                     <div>
                         <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Meta & Head Tags</span>
                         <div class="flex flex-wrap gap-2">
@@ -275,7 +249,6 @@
                     </div>
                 </div>
 
-                <!-- Add External URL Section -->
                 <div class="mb-4 pt-4 border-t border-slate-700">
                     <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Add External Stylesheet / Script (URL)</label>
                     <div class="flex gap-2">
@@ -291,7 +264,6 @@
 
                 <textarea id="lib-content" class="w-full h-40 bg-[#0f172a] border border-slate-700 rounded text-slate-300 p-3 code-font text-xs outline-none focus:border-sky-500 resize-none leading-relaxed" placeholder="<script src='...'></script>&#10;<link rel='stylesheet' href='...'>&#10;<meta name='viewport' content='...'>"></textarea>
                 
-                <!-- Footer Modal Updated: Added Clear Button -->
                 <div class="flex justify-between items-center mt-4 pt-4 border-t border-slate-700 sticky bottom-0 bg-slate-900/95 backdrop-blur">
                     <button onclick="clearLibraries()" class="px-3 py-2 bg-slate-800 hover:bg-red-900/30 text-red-400 hover:text-red-300 border border-slate-600 hover:border-red-800/50 text-xs font-medium rounded transition flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -425,13 +397,9 @@ if (typeof gsap !== 'undefined') {
   console.error("GSAP not found. Please add it via the Libraries menu.");
 }`;
 
-        // Variables declared at top scope
         let htmlEditor, cssEditor, jsEditor, previewFrame, statusMsg, sourceModal, fullSourceArea, fullscreenModal, fullscreenFrame, fileUploadInput, librariesModal, libContent, cssPreprocessorSelect, cssPreprocessorControl, jsPreprocessorSelect, jsPreprocessorControl, htmlPreprocessorSelect, htmlPreprocessorControl;
-        
-        // Variable state for Centering (Default True)
         let isCentered = true;
 
-        // Initialize elements - moved to a function for safety
         function initElements() {
              htmlEditor = document.getElementById('editor-html');
              cssEditor = document.getElementById('editor-css');
@@ -460,50 +428,36 @@ if (typeof gsap !== 'undefined') {
              htmlPreprocessorControl = document.getElementById('preprocessor-control-html');
         }
 
-        // Tab Switching Logic
         function switchTab(type) {
-            // Hide all editors
             document.querySelectorAll('.editor-area').forEach(el => el.classList.add('hidden'));
-            
-            // Reset tab styles
             document.querySelectorAll('[id^="tab-"]').forEach(el => {
                 el.classList.remove('tab-active');
                 el.classList.add('tab-inactive');
             });
 
-            // Show selected editor
             document.getElementById(`editor-${type}`).classList.remove('hidden');
             
-            // Highlight selected tab
             const activeTab = document.getElementById(`tab-${type}`);
             activeTab.classList.remove('tab-inactive');
             activeTab.classList.add('tab-active');
 
-            // Show preprocessor controls
             if (cssPreprocessorControl) cssPreprocessorControl.classList.add('hidden');
             if (jsPreprocessorControl) jsPreprocessorControl.classList.add('hidden');
             if (htmlPreprocessorControl) htmlPreprocessorControl.classList.add('hidden');
 
-            if (type === 'css') {
-                if(cssPreprocessorControl) cssPreprocessorControl.classList.remove('hidden');
-            } else if (type === 'js') {
-                if(jsPreprocessorControl) jsPreprocessorControl.classList.remove('hidden');
-            } else if (type === 'html') {
-                if(htmlPreprocessorControl) htmlPreprocessorControl.classList.remove('hidden');
-            }
+            if (type === 'css' && cssPreprocessorControl) cssPreprocessorControl.classList.remove('hidden');
+            else if (type === 'js' && jsPreprocessorControl) jsPreprocessorControl.classList.remove('hidden');
+            else if (type === 'html' && htmlPreprocessorControl) htmlPreprocessorControl.classList.remove('hidden');
         }
 
-        // Toggle Center Function
         function toggleCenter() {
             isCentered = !isCentered;
             const btn = document.getElementById('btn-center');
             
             if (isCentered) {
-                // Active Style
                 btn.classList.remove('bg-slate-800', 'text-slate-300', 'border-slate-700');
                 btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-500', 'shadow-lg', 'shadow-indigo-900/20');
             } else {
-                // Inactive Style
                 btn.classList.add('bg-slate-800', 'text-slate-300', 'border-slate-700');
                 btn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-500', 'shadow-lg', 'shadow-indigo-900/20');
             }
@@ -511,42 +465,54 @@ if (typeof gsap !== 'undefined') {
             updatePreview().catch(console.error);
         }
 
-        // Initialize from LocalStorage or Defaults
+        // Safe LocalStorage helpers
+        function safeGetItem(key, fallback) {
+            try {
+                const val = localStorage.getItem(key);
+                return val !== null ? val : fallback;
+            } catch (e) {
+                return fallback;
+            }
+        }
+
+        function safeSetItem(key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch (e) {
+                console.warn('localStorage tidak tersedia:', e);
+            }
+        }
+
         function init() {
-            // Ensure elements are fetched
             if (!htmlEditor) initElements();
 
-            htmlEditor.value = localStorage.getItem('lc_html') || defaultHTML;
-            cssEditor.value = localStorage.getItem('lc_css') || defaultCSS;
-            jsEditor.value = localStorage.getItem('lc_js') || defaultJS;
-            libContent.value = localStorage.getItem('lc_libs') || '';
+            htmlEditor.value = safeGetItem('lc_html', defaultHTML);
+            cssEditor.value = safeGetItem('lc_css', defaultCSS);
+            jsEditor.value = safeGetItem('lc_js', defaultJS);
+            libContent.value = safeGetItem('lc_libs', '');
             
             if (cssPreprocessorSelect) {
-                cssPreprocessorSelect.value = localStorage.getItem('lc_css_preprocessor') || 'css';
+                cssPreprocessorSelect.value = safeGetItem('lc_css_preprocessor', 'css');
             }
             if (jsPreprocessorSelect) {
-                jsPreprocessorSelect.value = localStorage.getItem('lc_js_preprocessor') || 'js';
+                jsPreprocessorSelect.value = safeGetItem('lc_js_preprocessor', 'js');
             }
             if (htmlPreprocessorSelect) {
-                htmlPreprocessorSelect.value = localStorage.getItem('lc_html_preprocessor') || 'html';
+                htmlPreprocessorSelect.value = safeGetItem('lc_html_preprocessor', 'html');
             }
             
-            // Initial render without delay
             updatePreview().catch(console.error);
         }
 
-        // Reset Code
         function resetCode() {
             if(confirm('Apakah Anda yakin ingin mereset kode ke default? Kode saat ini akan hilang.')) {
                 htmlEditor.value = defaultHTML;
                 cssEditor.value = defaultCSS;
                 jsEditor.value = defaultJS;
-                // Optional: Reset libs too or keep them? Let's keep them for convenience.
                 updatePreview().catch(console.error);
             }
         }
 
-        // Clear Code
         function clearCode() {
             if(confirm('Apakah Anda yakin ingin menghapus SEMUA kode (HTML, CSS, JS)? Editor akan menjadi kosong.')) {
                 htmlEditor.value = '';
@@ -556,61 +522,56 @@ if (typeof gsap !== 'undefined') {
             }
         }
 
-        // Copy Current Code Logic
         function copyCurrentCode(btn) {
-            // Find which editor is currently visible
             const editors = ['editor-html', 'editor-css', 'editor-js'];
             let activeContent = '';
             
             editors.forEach(id => {
                 const el = document.getElementById(id);
-                if (!el.classList.contains('hidden')) {
+                if (el && !el.classList.contains('hidden')) {
                     activeContent = el.value;
                 }
             });
 
-            if (activeContent) {
-                // Fallback to simpler method if navigator.clipboard fails in frame
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(activeContent).then(showSuccess).catch(tryFallback);
-                } else {
-                    tryFallback();
-                }
+            if (!activeContent) return;
 
-                function tryFallback() {
-                    const textArea = document.createElement("textarea");
-                    textArea.value = activeContent;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    try {
-                        document.execCommand('copy');
-                        showSuccess();
-                    } catch (err) {
-                        console.error('Copy failed', err);
-                        alert('Gagal menyalin kode. Izin browser mungkin dibatasi.');
-                    }
-                    document.body.removeChild(textArea);
-                }
+            const doCopy = () => {
+                const iconCopy = btn.querySelector('#icon-copy');
+                const iconCheck = btn.querySelector('#icon-check');
+                
+                if (iconCopy) iconCopy.classList.add('hidden');
+                if (iconCheck) iconCheck.classList.remove('hidden');
+                btn.classList.add('border-green-500/50');
 
-                function showSuccess() {
-                    // Visual Feedback
-                    const iconCopy = btn.querySelector('#icon-copy');
-                    const iconCheck = btn.querySelector('#icon-check');
-                    
-                    iconCopy.classList.add('hidden');
-                    iconCheck.classList.remove('hidden');
-                    btn.classList.add('border-green-500/50');
+                setTimeout(() => {
+                    if (iconCopy) iconCopy.classList.remove('hidden');
+                    if (iconCheck) iconCheck.classList.add('hidden');
+                    btn.classList.remove('border-green-500/50');
+                }, 2000);
+            };
 
-                    setTimeout(() => {
-                        iconCopy.classList.remove('hidden');
-                        iconCheck.classList.add('hidden');
-                        btn.classList.remove('border-green-500/50');
-                    }, 2000);
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(activeContent).then(doCopy).catch(() => fallbackCopy());
+            } else {
+                fallbackCopy();
+            }
+
+            function fallbackCopy() {
+                const textArea = document.createElement("textarea");
+                textArea.value = activeContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    doCopy();
+                } catch (err) {
+                    console.error('Copy failed', err);
+                    alert('Gagal menyalin kode. Izin browser mungkin dibatasi.');
                 }
+                document.body.removeChild(textArea);
             }
         }
 
-        // Libraries Logic
         function openLibraries() {
             librariesModal.classList.remove('hidden');
         }
@@ -621,12 +582,10 @@ if (typeof gsap !== 'undefined') {
 
         function addLib(type) {
             let tag = '';
-            // Define strict strings for removal matching (legacy)
             const normalizeTag = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">';
             const resetTag = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css@5.0.2/reset.min.css">';
 
             switch(type) {
-                // === CSS Base & Reset & Prefixing ===
                 case 'normalize':
                     tag = normalizeTag;
                     break;
@@ -637,38 +596,25 @@ if (typeof gsap !== 'undefined') {
                     tag = '<script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"><\/script>';
                     break;
                 case 'neither':
-                    // UPDATE: Menggunakan Regex Replace agar penghapusan lebih pasti
                     let currentContent = libContent.value;
-                    
-                    // Hapus baris yang mengandung normalize.min.css (case insensitive, global)
                     currentContent = currentContent.replace(/.*normalize\.min\.css.*\n?/gi, "");
-                    
-                    // Hapus baris yang mengandung reset.min.css (case insensitive, global)
                     currentContent = currentContent.replace(/.*reset\.min\.css.*\n?/gi, "");
-                    
-                    // Update value textarea dan trim spasi berlebih
                     libContent.value = currentContent.trim();
                     
-                    // Efek Visual Tombol yang Stabil
                     const btn = document.querySelector('button[onclick="addLib(\'neither\')"]');
                     if(btn) {
                         if (btn.dataset.isAnimating) return;
-                        
                         btn.dataset.isAnimating = "true";
                         const originalHTML = '<span class="font-bold text-red-400">×</span> Remove Base/Reset';
-                        
                         btn.innerHTML = '<span class="font-bold text-green-400">✓</span> Removed!';
                         btn.classList.add('border-green-500', 'text-green-300');
-                        
                         setTimeout(() => {
                             btn.innerHTML = originalHTML;
                             btn.classList.remove('border-green-500', 'text-green-300');
                             delete btn.dataset.isAnimating; 
                         }, 1000);
                     }
-                    return; // Keluar fungsi
-
-                // === Existing Libraries ===
+                    return;
                 case 'react':
                     tag = '<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin><\/script>\n' +
                           '<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin><\/script>\n' +
@@ -689,7 +635,6 @@ if (typeof gsap !== 'undefined') {
                 case 'jquery':
                     tag = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>';
                     break;
-                // === Meta Tags ===
                 case 'viewport':
                     tag = '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
                     break;
@@ -701,12 +646,11 @@ if (typeof gsap !== 'undefined') {
                     break;
             }
             
-            if (libContent.value.indexOf(tag) === -1) {
+            if (tag && libContent.value.indexOf(tag) === -1) {
                 libContent.value += (libContent.value ? '\n' : '') + tag;
             }
         }
 
-        // NEW: Add External URL Logic
         function addExternal(type) {
             const urlInput = document.getElementById('external-url');
             const url = urlInput.value.trim();
@@ -723,13 +667,10 @@ if (typeof gsap !== 'undefined') {
                 tag = `<script src="${url}"><\/script>`;
             }
 
-            // Append to textarea
             if (libContent.value.indexOf(url) === -1) {
                 const separator = libContent.value ? '\n' : '';
                 libContent.value += separator + tag;
-                urlInput.value = ''; // Reset input
-                
-                // Visual feedback (optional)
+                urlInput.value = '';
                 const originalPlaceholder = urlInput.placeholder;
                 urlInput.placeholder = "Berhasil ditambahkan!";
                 setTimeout(() => urlInput.placeholder = originalPlaceholder, 1500);
@@ -738,22 +679,19 @@ if (typeof gsap !== 'undefined') {
             }
         }
 
-        // FUNGSI BARU: Clear Libraries
         function clearLibraries() {
-            if (libContent.value.trim() === '') return; // Tidak ada yang perlu dihapus
-            
+            if (libContent.value.trim() === '') return;
             if(confirm('Apakah Anda yakin ingin menghapus semua library dan pengaturan head?')) {
                 libContent.value = '';
             }
         }
 
         function saveLibraries() {
-            localStorage.setItem('lc_libs', libContent.value);
+            safeSetItem('lc_libs', libContent.value);
             closeLibraries();
             updatePreview().catch(console.error);
         }
 
-        // Upload/Import Logic
         function triggerUpload() {
             if(confirm('Mengimpor file akan menimpa kode yang ada di editor saat ini. Lanjutkan?')) {
                 fileUploadInput.click();
@@ -766,212 +704,211 @@ if (typeof gsap !== 'undefined') {
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                const content = e.target.result;
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(content, 'text/html');
+                try {
+                    const content = e.target.result;
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(content, 'text/html');
 
-                // Extract Libraries (simple heuristic: scripts with src or links with rel=stylesheet in head)
-                const headChildren = doc.head.children;
-                let libs = '';
-                for(let el of headChildren) {
-                    if ((el.tagName === 'SCRIPT' && el.src) || (el.tagName === 'LINK' && el.rel === 'stylesheet')) {
-                        libs += el.outerHTML + '\n';
+                    const headChildren = doc.head ? doc.head.children : [];
+                    let libs = '';
+                    for(let el of headChildren) {
+                        if ((el.tagName === 'SCRIPT' && el.src) || (el.tagName === 'LINK' && el.rel === 'stylesheet')) {
+                            libs += el.outerHTML + '\n';
+                        }
                     }
-                }
-                
-                // Extract CSS
-                const styles = doc.querySelectorAll('style');
-                let cssContent = '';
-                styles.forEach(style => {
-                    cssContent += style.innerHTML + '\n\n';
-                    style.remove();
-                });
+                    
+                    const styles = doc.querySelectorAll('style');
+                    let cssContent = '';
+                    styles.forEach(style => {
+                        cssContent += style.innerHTML + '\n\n';
+                        style.remove();
+                    });
 
-                // Extract JS
-                const scripts = doc.querySelectorAll('script');
-                let jsContent = '';
-                scripts.forEach(script => {
-                    if (!script.src) {
-                         jsContent += script.innerHTML + '\n\n';
-                         script.remove();
+                    const scripts = doc.querySelectorAll('script');
+                    let jsContent = '';
+                    scripts.forEach(script => {
+                        if (!script.src) {
+                             jsContent += script.innerHTML + '\n\n';
+                             script.remove();
+                        }
+                    });
+
+                    let htmlContent = "";
+                    if (doc.body) {
+                        htmlContent = doc.body.innerHTML.replace(/^\s*[\r\n]/gm, ''); 
+                    } else {
+                        htmlContent = doc.documentElement.innerHTML;
                     }
-                });
 
-                // Extract Body
-                let htmlContent = "";
-                if (doc.body) {
-                    htmlContent = doc.body.innerHTML.replace(/^\s*[\r\n]/gm, ''); 
-                } else {
-                    htmlContent = doc.documentElement.innerHTML;
+                    htmlEditor.value = htmlContent.trim();
+                    cssEditor.value = cssContent.trim();
+                    jsEditor.value = jsContent.trim();
+                    libContent.value = libs.trim();
+
+                    input.value = '';
+                    saveLibraries();
+                    updatePreview().catch(console.error);
+                    alert('File berhasil diimpor!');
+                } catch (err) {
+                    console.error('Import error:', err);
+                    alert('Gagal mengimpor file: ' + err.message);
                 }
-
-                htmlEditor.value = htmlContent.trim();
-                cssEditor.value = cssContent.trim();
-                jsEditor.value = jsContent.trim();
-                libContent.value = libs.trim();
-
-                input.value = '';
-                
-                saveLibraries(); // Save the imported libs
-                updatePreview().catch(console.error);
-                alert('File berhasil diimpor!');
             };
+            reader.onerror = () => alert('Gagal membaca file.');
             reader.readAsText(file);
         }
 
-        // Helper: Load Script Asynchronously with CORS
         function loadScript(src) {
             return new Promise((resolve, reject) => {
+                if (!src) return reject(new Error('Empty script src'));
                 const script = document.createElement('script');
                 script.src = src;
-                script.crossOrigin = "anonymous"; // Added for better error reporting
+                script.crossOrigin = "anonymous";
                 script.onload = resolve;
                 script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
                 document.head.appendChild(script);
             });
         }
 
-        // Helper: Compile CSS
         async function compileCSS(code, type) {
             if (type === 'css') return code;
             
             if (type === 'scss') {
-                if (!window.Sass) {
-                    statusMsg.textContent = "Loading Sass Compiler...";
+                if (typeof window.Sass === 'undefined') {
+                    if (statusMsg) statusMsg.textContent = "Loading Sass Compiler...";
                     try {
                         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/sass.js/0.11.1/sass.sync.min.js');
                     } catch(e) {
-                        return `/* Gagal memuat Sass: ${e} */`;
+                        return `/* Gagal memuat Sass: ${e.message} */\n${code}`;
                     }
                 }
                 
                 return new Promise(resolve => {
-                    Sass.compile(code, (result) => {
-                        if (result.status === 0) {
-                            resolve(result.text);
-                        } else {
-                            resolve(`/* Sass Error Line ${result.line}: ${result.message} */ \n body:before { content: "Sass Error: ${result.message}"; color: red; background: white; padding: 10px; display: block; }`);
-                        }
-                    });
+                    try {
+                        window.Sass.compile(code, (result) => {
+                            if (result && result.status === 0) {
+                                resolve(result.text);
+                            } else {
+                                const msg = result ? result.message : 'Unknown Sass error';
+                                const line = result ? result.line : '?';
+                                resolve(`/* Sass Error Line ${line}: ${msg} */ \nbody:before { content: "Sass Error: ${msg.replace(/"/g, '\\"')}"; color: red; background: white; padding: 10px; display: block; }`);
+                            }
+                        });
+                    } catch (e) {
+                        resolve(`/* Sass Exception: ${e.message} */`);
+                    }
                 });
             }
 
             if (type === 'less') {
-                if (!window.less) {
-                    statusMsg.textContent = "Loading Less Compiler...";
+                if (typeof window.less === 'undefined') {
+                    if (statusMsg) statusMsg.textContent = "Loading Less Compiler...";
                     try {
                         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/less.js/4.1.3/less.min.js');
                     } catch(e) {
-                         return `/* Gagal memuat Less: ${e} */`;
+                        return `/* Gagal memuat Less: ${e.message} */\n${code}`;
                     }
                 }
 
                 return new Promise(resolve => {
-                    less.render(code, (e, output) => {
-                        if (e) {
-                             resolve(`/* Less Error: ${e.message} */ \n body:before { content: "Less Error: ${e.message}"; color: red; background: white; padding: 10px; display: block; }`);
-                        } else {
-                            resolve(output.css);
-                        }
-                    });
+                    try {
+                        window.less.render(code, (e, output) => {
+                            if (e) {
+                                resolve(`/* Less Error: ${e.message} */ \nbody:before { content: "Less Error: ${e.message.replace(/"/g, '\\"')}"; color: red; background: white; padding: 10px; display: block; }`);
+                            } else {
+                                resolve(output.css);
+                            }
+                        });
+                    } catch (err) {
+                        resolve(`/* Less Exception: ${err.message} */`);
+                    }
                 });
             }
 
             return code;
         }
 
-        // Helper: Compile JS
         async function compileJS(code, type) {
             if (type === 'js') return code;
 
-            // Shared Babel Loader for TS and Babel modes
             if (type === 'typescript' || type === 'babel') {
-                if (!window.Babel) {
-                    statusMsg.textContent = "Loading Babel...";
+                if (typeof window.Babel === 'undefined') {
+                    if (statusMsg) statusMsg.textContent = "Loading Babel...";
                     try {
                          await loadScript('https://unpkg.com/@babel/standalone/babel.min.js');
                     } catch(e) {
-                        return `console.error("Failed to load Babel: ${e.message}");`;
+                        return `console.error("Failed to load Babel: ${e.message}");\n${code}`;
                     }
                 }
             }
 
             if (type === 'babel') {
                 try {
-                    // Compile ES6+/JSX to standard JS
-                    const res = Babel.transform(code, { presets: ['env', 'react'], filename: 'script.js' });
+                    const res = window.Babel.transform(code, { presets: ['env', 'react'], filename: 'script.js' });
                     return res.code;
                 } catch (e) {
-                     return `console.error("Babel Error: ${e.message.replace(/"/g, '\\"')}");`;
+                    return `console.error("Babel Error: ${e.message.replace(/"/g, '\\"')}");\n${code}`;
                 }
             }
 
             if (type === 'typescript') {
                 try {
-                    const res = Babel.transform(code, { presets: ['typescript', 'react', 'env'], filename: 'script.ts' });
+                    const res = window.Babel.transform(code, { presets: ['typescript', 'react', 'env'], filename: 'script.ts' });
                     return res.code;
                 } catch (e) {
-                     return `console.error("TypeScript Error: ${e.message.replace(/"/g, '\\"')}");`;
+                    return `console.error("TypeScript Error: ${e.message.replace(/"/g, '\\"')}");\n${code}`;
                 }
             }
 
             if (type === 'coffeescript') {
-                if (!window.CoffeeScript) {
-                    statusMsg.textContent = "Loading CoffeeScript...";
+                if (typeof window.CoffeeScript === 'undefined') {
+                    if (statusMsg) statusMsg.textContent = "Loading CoffeeScript...";
                     try {
                         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/coffeescript/2.7.0/coffeescript.min.js');
                     } catch(e) {
-                        return `console.error("Failed to load CoffeeScript: ${e.message}");`;
+                        return `console.error("Failed to load CoffeeScript: ${e.message}");\n${code}`;
                     }
                 }
                 try {
-                    return CoffeeScript.compile(code, { bare: true });
+                    return window.CoffeeScript.compile(code, { bare: true });
                 } catch (e) {
-                     return `console.error("CoffeeScript Error: ${e.message.replace(/"/g, '\\"')}");`;
+                    return `console.error("CoffeeScript Error: ${e.message.replace(/"/g, '\\"')}");\n${code}`;
                 }
             }
 
             return code;
         }
 
-        // Helper: Compile Slim Lite (Browser Implementation)
         function compileSlimLite(code) {
             const lines = code.split('\n');
             let output = '';
-            const stack = []; // { indent: number, tag: string }
+            const stack = [];
 
-            lines.forEach((line, index) => {
+            lines.forEach((line) => {
                 if (!line.trim()) return;
 
-                // Determine indentation
                 const indentMatch = line.match(/^\s*/);
                 const indent = indentMatch ? indentMatch[0].length : 0;
                 const content = line.trim();
                 
-                // Close tags based on indentation
                 while (stack.length > 0 && stack[stack.length - 1].indent >= indent) {
                     output += `</${stack.pop().tag}>`;
                 }
 
-                // Handle special characters
                 if (content.startsWith('|')) {
                     output += content.substring(1) + ' ';
                     return;
                 }
                 
                 if (content.startsWith('/')) {
-                    // Comment - ignore
                     return;
                 }
                 
                 if (content.startsWith('=')) {
-                    // Output - wrap in span or just text
                      output += content.substring(1) + ' ';
                      return;
                 }
 
-                // Regex: tag#id.class or #id.class or .class
-                // Captures: 1:tag, 2:id, 3:classes, 5:text
                 const match = content.match(/^([a-z0-9:-]+)?(#[a-z0-9:-]+)?((\.[a-z0-9:-]+)*)(?:\s+(.*))?$/i);
                 
                 if (match) {
@@ -980,7 +917,6 @@ if (typeof gsap !== 'undefined') {
                     const classes = match[3];
                     const text = match[5];
 
-                    // If line starts with . or # and no tag is specified, it's a div
                     if (!match[1] && (id || classes)) {
                         tag = 'div';
                     }
@@ -996,7 +932,6 @@ if (typeof gsap !== 'undefined') {
 
                     if (text) {
                         if (text.startsWith('=')) {
-                             // Mimic ruby output
                              output += text.substring(1); 
                         } else {
                              output += text;
@@ -1006,15 +941,10 @@ if (typeof gsap !== 'undefined') {
                         stack.push({ indent: indent, tag: tag });
                     }
                 } else {
-                    // Fallback for plain text or unknown lines not matching tag syntax
-                    // Usually Slim treats unknown lines as text if they don't look like tags? 
-                    // Or they must be prefixed with |
-                    // For this lite parser, if it fails regex but has text, we treat as text.
                     output += content + ' ';
                 }
             });
 
-            // Close remaining tags
             while (stack.length > 0) {
                 output += `</${stack.pop().tag}>`;
             }
@@ -1022,73 +952,73 @@ if (typeof gsap !== 'undefined') {
             return output;
         }
 
-        // Helper: Compile HTML (Updated with Haml & Slim)
         async function compileHTML(code, type) {
             if (type === 'html') return code;
 
             if (type === 'markdown') {
-                if (!window.marked) {
-                    statusMsg.textContent = "Loading Markdown Compiler...";
+                if (typeof window.marked === 'undefined') {
+                    if (statusMsg) statusMsg.textContent = "Loading Markdown Compiler...";
                     try {
                         await loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js');
                     } catch(e) {
-                        return `<!-- Failed to load marked: ${e.message} -->`;
+                        return `<!-- Failed to load marked: ${e.message} -->\n<pre>${code}</pre>`;
                     }
                 }
                 try {
-                    return marked.parse(code);
+                    return window.marked.parse(code);
                 } catch(e) {
-                    return `<!-- Markdown Error: ${e.message} -->`;
+                    return `<!-- Markdown Error: ${e.message} -->\n<pre>${code}</pre>`;
                 }
             }
 
             if (type === 'pug') {
-                if (!window.pug) {
-                    statusMsg.textContent = "Loading Pug Compiler...";
+                if (typeof window.pug === 'undefined') {
+                    if (statusMsg) statusMsg.textContent = "Loading Pug Compiler...";
                     try {
                         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pug/3.0.2/pug.min.js');
                     } catch(e) {
-                        return `<!-- Failed to load Pug: ${e.message} -->`;
+                        return `<!-- Failed to load Pug: ${e.message} -->\n<pre>${code}</pre>`;
                     }
                 }
                 try {
-                    return pug.render(code);
+                    return window.pug.render(code);
                 } catch(e) {
-                    return `<!-- Pug Error: ${e.message} -->`;
+                    return `<!-- Pug Error: ${e.message} -->\n<pre>${code}</pre>`;
                 }
             }
 
             if (type === 'haml') {
-                if (!window.haml) {
-                    statusMsg.textContent = "Loading Haml Compiler...";
+                const hamlLib = window.haml || window.Haml;
+                if (typeof hamlLib === 'undefined') {
+                    if (statusMsg) statusMsg.textContent = "Loading Haml Compiler...";
                     try {
-                        // Load clientside-haml-js
                         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/clientside-haml-js/1.0.0/haml.min.js');
                     } catch(e) {
-                        return `<!-- Failed to load Haml: ${e.message} -->`;
+                        return `<!-- Failed to load Haml: ${e.message} -->\n<pre>${code}</pre>`;
                     }
                 }
                 try {
-                    // clientside-haml-js exposes 'haml.compileHaml' which returns a function
-                    return haml.compileHaml({source: code})();
+                    const lib = window.haml || window.Haml;
+                    if (lib && lib.compileHaml) {
+                        return lib.compileHaml({source: code})();
+                    }
+                    throw new Error('Haml compiler API not found');
                 } catch(e) {
-                    return `<!-- Haml Error: ${e.message} -->`;
+                    return `<!-- Haml Error: ${e.message} -->\n<pre>${code}</pre>`;
                 }
             }
 
             if (type === 'slim') {
-                // Custom Lite Parser
                 try {
                    return compileSlimLite(code);
                 } catch(e) {
-                   return `<!-- Slim Lite Error: ${e.message} -->`;
+                   return `<!-- Slim Lite Error: ${e.message} -->\n<pre>${code}</pre>`;
                 }
             }
 
             return code;
         }
 
-        // Fullscreen Logic
         function openFullscreen() {
             const rawCss = cssEditor.value;
             const rawJs = jsEditor.value;
@@ -1103,7 +1033,6 @@ if (typeof gsap !== 'undefined') {
                 compileHTML(rawHtml, htmlPrep)
             ]).then(([css, js, html]) => {
                 const libs = libContent.value;
-                
                 let scriptAttr = '';
                 if (jsPrep === 'js' && libs.includes('babel')) {
                     scriptAttr = 'type="text/babel" data-presets="react,typescript"';
@@ -1151,12 +1080,11 @@ if (typeof gsap !== 'undefined') {
         }
 
         document.addEventListener('keydown', function(event) {
-            if (event.key === "Escape" && !fullscreenModal.classList.contains('hidden')) {
+            if (event.key === "Escape" && fullscreenModal && !fullscreenModal.classList.contains('hidden')) {
                 closeFullscreen();
             }
         });
 
-        // Full Script Preview Logic
         function showFullSource() {
             const rawHtml = htmlEditor.value;
             const rawCss = cssEditor.value;
@@ -1219,35 +1147,25 @@ ${displayJs}
             fullSourceArea.select();
             document.execCommand('copy');
             const btn = document.querySelector('button[onclick="copySource()"]');
-            const originalText = btn.innerText;
-            btn.innerText = "Tersalin!";
-            setTimeout(() => btn.innerText = originalText, 1500);
+            if (btn) {
+                const originalText = btn.innerText;
+                btn.innerText = "Tersalin!";
+                setTimeout(() => btn.innerText = originalText, 1500);
+            }
         }
 
-        // Custom Filename Download
         function downloadSource() {
             const content = fullSourceArea.value;
             const defaultName = 'project.html';
-            
-            // Minta input nama file dari user
             let fileName = prompt("Masukkan nama file untuk disimpan:", defaultName);
-            
-            // Jika user menekan Cancel, batalkan download
             if (fileName === null) return; 
-            
-            // Jika input kosong, gunakan nama default
-            if (!fileName.trim()) {
-                fileName = defaultName;
-            }
-            
-            // Pastikan ekstensi file adalah .html
+            if (!fileName.trim()) fileName = defaultName;
             if (!fileName.toLowerCase().endsWith('.html') && !fileName.toLowerCase().endsWith('.htm')) {
                 fileName += '.html';
             }
 
             const blob = new Blob([content], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
-            
             const a = document.createElement('a');
             a.href = url;
             a.download = fileName;
@@ -1257,13 +1175,11 @@ ${displayJs}
             URL.revokeObjectURL(url);
         }
 
-        // Core Compiler Logic - NOW ASYNC with Error Handling
         async function updatePreview() {
             try {
-                // Safety check: ensure previewFrame exists
                 if (!previewFrame) {
                     previewFrame = document.getElementById('preview-frame');
-                    if (!previewFrame) return; // Exit if still null
+                    if (!previewFrame) return;
                 }
 
                 const rawHtml = htmlEditor.value;
@@ -1274,15 +1190,14 @@ ${displayJs}
                 const jsPrepType = jsPreprocessorSelect ? jsPreprocessorSelect.value : 'js';
                 const htmlPrepType = htmlPreprocessorSelect ? htmlPreprocessorSelect.value : 'html';
 
-                localStorage.setItem('lc_html', rawHtml);
-                localStorage.setItem('lc_css', rawCss);
-                localStorage.setItem('lc_js', rawJs);
-                localStorage.setItem('lc_libs', libs);
-                localStorage.setItem('lc_css_preprocessor', cssPrepType);
-                localStorage.setItem('lc_js_preprocessor', jsPrepType);
-                localStorage.setItem('lc_html_preprocessor', htmlPrepType);
+                safeSetItem('lc_html', rawHtml);
+                safeSetItem('lc_css', rawCss);
+                safeSetItem('lc_js', rawJs);
+                safeSetItem('lc_libs', libs);
+                safeSetItem('lc_css_preprocessor', cssPrepType);
+                safeSetItem('lc_js_preprocessor', jsPrepType);
+                safeSetItem('lc_html_preprocessor', htmlPrepType);
 
-                // Update Placeholder logic (No changes needed here)
                 if(cssPrepType === 'scss') cssEditor.placeholder = "/* Tulis SCSS di sini */";
                 else if(cssPrepType === 'less') cssEditor.placeholder = "/* Tulis LESS di sini */";
                 else cssEditor.placeholder = "/* Tulis CSS di sini */";
@@ -1298,8 +1213,6 @@ ${displayJs}
                 else if(htmlPrepType === 'slim') htmlEditor.placeholder = "h1 Hello Slim\n.container\n  p Tulis Slim di sini...";
                 else htmlEditor.placeholder = "<!-- Tulis HTML di sini -->";
 
-
-                // Compile Everything if needed
                 let compiledCss = rawCss;
                 let compiledJs = rawJs;
                 let compiledHtml = rawHtml;
@@ -1308,7 +1221,6 @@ ${displayJs}
                      compiledCss = await compileCSS(rawCss, cssPrepType);
                 }
                 
-                // INJECT CENTER CSS IF ACTIVE
                 if (isCentered) {
                     compiledCss += `
                         /* Auto-Injected by LiveCompiler Center Mode */
@@ -1338,13 +1250,10 @@ ${displayJs}
                 let scriptAttr = '';
                 let scriptContent = '';
                 
-                // Detect ES Modules (import/export)
-                const isModule = compiledJs.includes('import ') || compiledJs.includes('export ');
+                const isModule = /^\s*import\s+/m.test(compiledJs) || /^\s*export\s+/m.test(compiledJs);
 
-                // IMPORT MAP GENERATOR (New Feature)
-                // Ini membantu browser menemukan 'three' saat di-import oleh library lain
                 let importMap = '';
-                if (isModule || libs.includes('three.js') || libs.includes('three.min.js')) {
+                if (isModule || libs.includes('three.js') || libs.includes('three.min.js') || libs.includes('three.module.js')) {
                     importMap = `
                     <script type="importmap">
                       {
@@ -1367,11 +1276,8 @@ ${displayJs}
                     `;
                 } else if (isModule) {
                     scriptAttr = 'type="module"';
-                    // Modules cannot be wrapped in try/catch block directly
-                    // We attach error listener to window instead
                     scriptContent = compiledJs;
                 } else {
-                    // Standard JS
                     scriptContent = `
                         try {
                             ${compiledJs}
@@ -1409,10 +1315,10 @@ ${displayJs}
                 iframeDoc.write(source);
                 iframeDoc.close();
 
-                statusMsg.textContent = "Diperbarui: " + new Date().toLocaleTimeString();
+                if (statusMsg) statusMsg.textContent = "Diperbarui: " + new Date().toLocaleTimeString();
             } catch (error) {
                 console.error("Preview Update Error:", error);
-                statusMsg.textContent = "Error: " + error.message;
+                if (statusMsg) statusMsg.textContent = "Error: " + error.message;
             }
         }
 
@@ -1428,33 +1334,26 @@ ${displayJs}
             };
         }
 
-        // Initialize App securely
         function startApp() {
              initElements();
 
-             // Add Event Listeners for Modals
              if (sourceModal) {
                  sourceModal.addEventListener('click', (e) => {
-                    if (e.target === sourceModal) {
-                        closeModal();
-                    }
+                    if (e.target === sourceModal) closeModal();
                  });
              }
 
              if (librariesModal) {
                  librariesModal.addEventListener('click', (e) => {
-                    if (e.target === librariesModal) {
-                        closeLibraries();
-                    }
+                    if (e.target === librariesModal) closeLibraries();
                  });
              }
 
              const debouncedUpdate = debounce(updatePreview, 800);
-             htmlEditor.addEventListener('input', debouncedUpdate);
-             cssEditor.addEventListener('input', debouncedUpdate);
-             jsEditor.addEventListener('input', debouncedUpdate);
+             if (htmlEditor) htmlEditor.addEventListener('input', debouncedUpdate);
+             if (cssEditor) cssEditor.addEventListener('input', debouncedUpdate);
+             if (jsEditor) jsEditor.addEventListener('input', debouncedUpdate);
 
-             // Textarea indent logic
              document.querySelectorAll('textarea').forEach(textarea => {
                 textarea.addEventListener('keydown', function(e) {
                     if (e.key === 'Tab') {
@@ -1470,7 +1369,6 @@ ${displayJs}
              init();
         }
 
-        // Run Init when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', startApp);
         } else {
