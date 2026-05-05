@@ -2,24 +2,24 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HTML JS Live Compiler</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; touch-action: manipulation; }
         .code-font { font-family: 'JetBrains Mono', monospace; }
         
         textarea::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
         }
         textarea::-webkit-scrollbar-track {
             background: #1e293b;
         }
         textarea::-webkit-scrollbar-thumb {
             background: #475569;
-            border-radius: 5px;
+            border-radius: 4px;
         }
         textarea::-webkit-scrollbar-thumb:hover {
             background: #64748b;
@@ -38,8 +38,27 @@
             background-color: #1e293b;
             color: #e2e8f0;
         }
+
+        .resizing {
+            cursor: col-resize !important;
+            user-select: none !important;
+        }
+        .resizing iframe {
+            pointer-events: none;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 1023px) {
+            .editor-area {
+                font-size: 14px !important;
+                line-height: 1.6 !important;
+            }
+            /* Prevent iOS zoom on input */
+            select, input, textarea {
+                font-size: 16px;
+            }
+        }
     </style>
-<base target="_blank">
 </head>
 <body class="bg-slate-900 text-white h-screen flex flex-col overflow-hidden">
 
@@ -47,67 +66,76 @@
     <input type="file" id="file-upload" accept=".html,.htm" class="hidden" onchange="handleFileUpload(this)">
 
     <!-- Header -->
-    <header class="h-14 bg-slate-950 border-b border-slate-800 flex items-center justify-between px-4 shrink-0">
-        <div class="flex items-center gap-2">
+    <header class="h-14 bg-slate-950 border-b border-slate-800 flex items-center justify-between px-3 lg:px-4 shrink-0">
+        <div class="flex items-center gap-2 shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
             </svg>
-            <h1 class="font-bold text-lg tracking-tight hidden md:block">Live<span class="text-sky-500">Compiler</span></h1>
+            <h1 class="font-bold text-base lg:text-lg tracking-tight hidden sm:block">Live<span class="text-sky-500">Compiler</span></h1>
         </div>
         
-        <div class="flex gap-2 overflow-x-auto items-center">
-            <button onclick="triggerUpload()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
+        <div class="flex gap-1.5 lg:gap-2 overflow-x-auto items-center no-scrollbar px-1">
+            <!-- Mobile Toggle Preview -->
+            <button onclick="togglePreviewMobile()" id="btn-preview-mobile" class="lg:hidden px-2.5 py-1.5 text-xs font-medium bg-pink-600 hover:bg-pink-500 text-white rounded shadow-lg shadow-pink-900/20 transition-all flex items-center gap-1 shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <span id="txt-preview-mobile">Preview</span>
+            </button>
+
+            <button onclick="triggerUpload()" class="px-2.5 lg:px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors flex items-center gap-1 shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
-                Import
+                <span class="hidden sm:inline">Import</span>
             </button>
 
-            <button onclick="openLibraries()" class="px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-500 text-white rounded shadow-lg shadow-amber-900/20 transition-all flex items-center gap-1">
+            <button onclick="openLibraries()" class="px-2.5 lg:px-3 py-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-500 text-white rounded shadow-lg shadow-amber-900/20 transition-all flex items-center gap-1 shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                Head / Libs
+                <span class="hidden sm:inline">Libs</span>
             </button>
 
-            <button onclick="clearCode()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-orange-900/50 text-orange-400 hover:text-orange-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
+            <button onclick="clearCode()" class="px-2.5 lg:px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-orange-900/50 text-orange-400 hover:text-orange-300 rounded border border-slate-700 transition-colors flex items-center gap-1 shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-9.172a2 2 0 00-1.414.586L3 12z" />
                 </svg>
-                Clear
+                <span class="hidden sm:inline">Clear</span>
             </button>
 
-            <button onclick="resetCode()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-red-900/50 text-red-400 hover:text-red-300 rounded border border-slate-700 transition-colors flex items-center gap-1">
+            <button onclick="resetCode()" class="px-2.5 lg:px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-red-900/50 text-red-400 hover:text-red-300 rounded border border-slate-700 transition-colors flex items-center gap-1 shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
-                Reset
+                <span class="hidden sm:inline">Reset</span>
             </button>
 
-            <button onclick="showFullSource()" class="px-3 py-1.5 text-xs font-medium bg-purple-600 hover:bg-purple-500 text-white rounded shadow-lg shadow-purple-900/20 transition-all flex items-center gap-1">
+            <button onclick="showFullSource()" class="px-2.5 lg:px-3 py-1.5 text-xs font-medium bg-purple-600 hover:bg-purple-500 text-white rounded shadow-lg shadow-purple-900/20 transition-all flex items-center gap-1 shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
-                Full Script
+                <span class="hidden sm:inline">Source</span>
             </button>
 
-            <button onclick="openFullscreen()" class="px-3 py-1.5 text-xs font-medium bg-teal-600 hover:bg-teal-500 text-white rounded shadow-lg shadow-teal-900/20 transition-all flex items-center gap-1">
+            <button onclick="openFullscreen()" class="hidden sm:flex px-2.5 lg:px-3 py-1.5 text-xs font-medium bg-teal-600 hover:bg-teal-500 text-white rounded shadow-lg shadow-teal-900/20 transition-all items-center gap-1 shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                 </svg>
-                Fullscreen
+                <span class="hidden md:inline">Fullscreen</span>
             </button>
 
-            <button onclick="toggleCenter()" id="btn-center" class="px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded border border-indigo-500 shadow-lg shadow-indigo-900/20 transition-colors flex items-center gap-1">
+            <button onclick="toggleCenter()" id="btn-center" class="hidden md:flex px-2.5 lg:px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded border border-indigo-500 shadow-lg shadow-indigo-900/20 transition-colors items-center gap-1 shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                Center
+                <span class="hidden lg:inline">Center</span>
             </button>
 
-            <button onclick="updatePreview()" class="px-3 py-1.5 text-xs font-medium bg-sky-600 hover:bg-sky-500 text-white rounded shadow-lg shadow-sky-900/20 transition-all flex items-center gap-1">
+            <button onclick="updatePreview()" class="px-2.5 lg:px-3 py-1.5 text-xs font-medium bg-sky-600 hover:bg-sky-500 text-white rounded shadow-lg shadow-sky-900/20 transition-all flex items-center gap-1 shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -118,27 +146,27 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative" id="main-container">
         
         <!-- Editor Section -->
-        <div class="w-full lg:w-1/2 flex flex-col border-r border-slate-800 bg-slate-900">
+        <div id="editor-panel" class="w-full flex flex-col bg-slate-900 lg:flex-shrink-0" style="width: 50%;">
             <!-- Tabs -->
             <div class="flex border-b border-slate-800 shrink-0">
-                <button onclick="switchTab('html')" id="tab-html" class="tab-active flex-1 py-3 text-sm font-medium transition-colors flex justify-center items-center gap-2">
+                <button onclick="switchTab('html')" id="tab-html" class="tab-active flex-1 py-3 text-sm font-medium transition-colors flex justify-center items-center gap-2 min-h-[48px]">
                     <span class="text-orange-500 font-bold">&lt;/&gt;</span> HTML
                 </button>
-                <button onclick="switchTab('css')" id="tab-css" class="tab-inactive flex-1 py-3 text-sm font-medium transition-colors flex justify-center items-center gap-2">
+                <button onclick="switchTab('css')" id="tab-css" class="tab-inactive flex-1 py-3 text-sm font-medium transition-colors flex justify-center items-center gap-2 min-h-[48px]">
                     <span class="text-blue-400 font-bold">#</span> CSS
                 </button>
-                <button onclick="switchTab('js')" id="tab-js" class="tab-inactive flex-1 py-3 text-sm font-medium transition-colors flex justify-center items-center gap-2">
+                <button onclick="switchTab('js')" id="tab-js" class="tab-inactive flex-1 py-3 text-sm font-medium transition-colors flex justify-center items-center gap-2 min-h-[48px]">
                     <span class="text-yellow-400 font-bold">{ }</span> JS
                 </button>
             </div>
 
             <!-- Editor Areas -->
-            <div class="relative flex-1 bg-[#1e293b] group">
-                <div id="preprocessor-control-html" class="absolute top-4 right-14 z-20">
-                    <select id="html-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm">
+            <div class="relative flex-1 bg-[#1e293b] group min-h-0">
+                <div id="preprocessor-control-html" class="absolute top-3 right-12 z-20">
+                    <select id="html-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm max-w-[110px]">
                         <option value="html">HTML</option>
                         <option value="markdown">Markdown</option>
                         <option value="pug">Pug</option>
@@ -147,16 +175,16 @@
                     </select>
                 </div>
 
-                <div id="preprocessor-control-css" class="absolute top-4 right-14 z-20 hidden">
-                    <select id="css-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm">
+                <div id="preprocessor-control-css" class="absolute top-3 right-12 z-20 hidden">
+                    <select id="css-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm max-w-[110px]">
                         <option value="css">CSS</option>
                         <option value="scss">SCSS</option>
                         <option value="less">LESS</option>
                     </select>
                 </div>
 
-                <div id="preprocessor-control-js" class="absolute top-4 right-14 z-20 hidden">
-                    <select id="js-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm">
+                <div id="preprocessor-control-js" class="absolute top-3 right-12 z-20 hidden">
+                    <select id="js-preprocessor" onchange="updatePreview()" class="bg-slate-800/90 text-xs text-slate-300 border border-slate-600 rounded px-2 py-1.5 hover:border-sky-500 focus:outline-none cursor-pointer backdrop-blur-sm shadow-sm max-w-[130px]">
                         <option value="js">JavaScript</option>
                         <option value="babel">Babel (ES6+)</option>
                         <option value="typescript">TypeScript</option>
@@ -164,7 +192,7 @@
                     </select>
                 </div>
 
-                <button onclick="copyCurrentCode(this)" class="absolute top-4 right-4 z-10 p-2 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 backdrop-blur-sm rounded-lg transition-all opacity-0 group-hover:opacity-100 border border-slate-700 shadow-lg" title="Salin Kode">
+                <button onclick="copyCurrentCode(this)" class="absolute top-3 right-2 z-10 p-2 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 backdrop-blur-sm rounded-lg transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 border border-slate-700 shadow-lg" title="Salin Kode">
                     <svg id="icon-copy" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
@@ -173,20 +201,25 @@
                     </svg>
                 </button>
 
-                <textarea id="editor-html" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-4 code-font text-sm outline-none resize-none leading-relaxed" spellcheck="false" placeholder="<!-- Tulis HTML di sini -->"></textarea>
-                <textarea id="editor-css" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-4 code-font text-sm outline-none resize-none leading-relaxed hidden" spellcheck="false" placeholder="/* Tulis CSS di sini */"></textarea>
-                <textarea id="editor-js" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-4 code-font text-sm outline-none resize-none leading-relaxed hidden" spellcheck="false" placeholder="// Tulis JavaScript di sini"></textarea>
+                <textarea id="editor-html" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-3 lg:p-4 code-font text-sm outline-none resize-none leading-relaxed" spellcheck="false" placeholder="<!-- Tulis HTML di sini -->"></textarea>
+                <textarea id="editor-css" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-3 lg:p-4 code-font text-sm outline-none resize-none leading-relaxed hidden" spellcheck="false" placeholder="/* Tulis CSS di sini */"></textarea>
+                <textarea id="editor-js" class="editor-area w-full h-full bg-[#0f172a] text-slate-200 p-3 lg:p-4 code-font text-sm outline-none resize-none leading-relaxed hidden" spellcheck="false" placeholder="// Tulis JavaScript di sini"></textarea>
             </div>
             
-            <div class="h-8 bg-slate-950 border-t border-slate-800 flex items-center px-4 text-xs text-slate-500 justify-between shrink-0">
+            <div class="h-8 bg-slate-950 border-t border-slate-800 flex items-center px-3 lg:px-4 text-[11px] lg:text-xs text-slate-500 justify-between shrink-0">
                 <span id="status-msg">Siap</span>
                 <span>Auto-save: Aktif</span>
             </div>
         </div>
 
+        <!-- Resizer Handle (Desktop only) -->
+        <div id="resizer" class="hidden lg:flex w-1.5 bg-slate-800 hover:bg-sky-500 cursor-col-resize items-center justify-center transition-colors z-20 relative group shrink-0">
+            <div class="w-0.5 h-8 bg-slate-600 group-hover:bg-sky-300 rounded-full transition-colors"></div>
+        </div>
+
         <!-- Preview Section -->
-        <div class="w-full lg:w-1/2 flex flex-col bg-white h-1/2 lg:h-full relative">
-            <div class="absolute top-0 left-0 bg-slate-200 text-slate-600 px-2 py-1 text-[10px] font-bold uppercase tracking-wider z-10 rounded-br shadow-sm">
+        <div id="preview-panel" class="w-full flex flex-col bg-white relative lg:h-auto border-t lg:border-t-0 border-slate-800">
+            <div class="absolute top-0 left-0 bg-slate-200 text-slate-600 px-2 py-1 text-[10px] font-bold uppercase tracking-wider z-10 rounded-br shadow-sm pointer-events-none">
                 Preview
             </div>
             <iframe id="preview-frame" class="w-full h-full bg-white border-none" sandbox="allow-scripts allow-modals allow-same-origin"></iframe>
@@ -198,43 +231,43 @@
     <div id="libraries-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-lg w-full max-w-lg shadow-2xl max-h-[90vh] flex flex-col">
             <div class="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-950 rounded-t-lg shrink-0">
-                <h3 class="font-bold text-white flex items-center gap-2">
+                <h3 class="font-bold text-white flex items-center gap-2 text-sm lg:text-base">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                     Stuff for &lt;head&gt;
                 </h3>
-                <button onclick="closeLibraries()" class="text-slate-400 hover:text-white">
+                <button onclick="closeLibraries()" class="text-slate-400 hover:text-white p-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
-            <div class="p-6 overflow-y-auto">
-                <p class="text-sm text-slate-400 mb-4">Tambahkan library eksternal, font, atau tag meta untuk <code class="bg-slate-800 px-1 rounded text-sky-400">&lt;head&gt;</code> di sini.</p>
+            <div class="p-4 lg:p-6 overflow-y-auto">
+                <p class="text-xs lg:text-sm text-slate-400 mb-4">Tambahkan library eksternal, font, atau tag meta untuk <code class="bg-slate-800 px-1 rounded text-sky-400">&lt;head&gt;</code> di sini.</p>
                 
                 <div class="space-y-4 mb-4">
                     <div>
                         <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Libraries</span>
                         <div class="flex flex-wrap gap-2">
-                            <button onclick="addLib('react')" class="px-2 py-1 text-xs bg-cyan-900/30 border border-cyan-700 hover:bg-cyan-900/50 text-cyan-400 rounded transition">+ React (with JSX)</button>
-                            <button onclick="addLib('gsap')" class="px-2 py-1 text-xs bg-green-900/30 border border-green-700 hover:bg-green-900/50 text-green-400 rounded transition">+ GSAP</button>
-                            <button onclick="addLib('tailwind')" class="px-2 py-1 text-xs bg-sky-900/30 border border-sky-700 hover:bg-sky-900/50 text-sky-400 rounded transition">+ Tailwind</button>
-                            <button onclick="addLib('bootstrap')" class="px-2 py-1 text-xs bg-purple-900/30 border border-purple-700 hover:bg-purple-900/50 text-purple-400 rounded transition">+ Bootstrap</button>
-                            <button onclick="addLib('fontawesome')" class="px-2 py-1 text-xs bg-blue-900/30 border border-blue-700 hover:bg-blue-900/50 text-blue-400 rounded transition">+ FontAwesome</button>
-                            <button onclick="addLib('jquery')" class="px-2 py-1 text-xs bg-orange-900/30 border border-orange-700 hover:bg-orange-900/50 text-orange-400 rounded transition">+ jQuery</button>
+                            <button onclick="addLib('react')" class="px-2 py-1.5 text-xs bg-cyan-900/30 border border-cyan-700 hover:bg-cyan-900/50 text-cyan-400 rounded transition">+ React</button>
+                            <button onclick="addLib('gsap')" class="px-2 py-1.5 text-xs bg-green-900/30 border border-green-700 hover:bg-green-900/50 text-green-400 rounded transition">+ GSAP</button>
+                            <button onclick="addLib('tailwind')" class="px-2 py-1.5 text-xs bg-sky-900/30 border border-sky-700 hover:bg-sky-900/50 text-sky-400 rounded transition">+ Tailwind</button>
+                            <button onclick="addLib('bootstrap')" class="px-2 py-1.5 text-xs bg-purple-900/30 border border-purple-700 hover:bg-purple-900/50 text-purple-400 rounded transition">+ Bootstrap</button>
+                            <button onclick="addLib('fontawesome')" class="px-2 py-1.5 text-xs bg-blue-900/30 border border-blue-700 hover:bg-blue-900/50 text-blue-400 rounded transition">+ FontAwesome</button>
+                            <button onclick="addLib('jquery')" class="px-2 py-1.5 text-xs bg-orange-900/30 border border-orange-700 hover:bg-orange-900/50 text-orange-400 rounded transition">+ jQuery</button>
                         </div>
                     </div>
 
                     <div>
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">CSS Base, Resets & Prefixing</span>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">CSS Base & Resets</span>
                         <div class="flex flex-wrap gap-2">
-                            <button onclick="addLib('normalize')" class="px-2 py-1 text-xs bg-pink-900/30 border border-pink-700 hover:bg-pink-900/50 text-pink-400 rounded transition">+ Normalize.css</button>
-                            <button onclick="addLib('reset')" class="px-2 py-1 text-xs bg-rose-900/30 border border-rose-700 hover:bg-rose-900/50 text-rose-400 rounded transition">+ Reset.css</button>
-                            <button onclick="addLib('prefixfree')" class="px-2 py-1 text-xs bg-indigo-900/30 border border-indigo-700 hover:bg-indigo-900/50 text-indigo-400 rounded transition">+ Vendor Prefixing</button>
-                            <button onclick="addLib('neither')" class="px-2 py-1 text-xs bg-slate-700 border border-slate-500 hover:bg-slate-600 text-slate-200 rounded transition flex items-center gap-1">
-                                <span class="font-bold text-red-400">×</span> Remove Base/Reset
+                            <button onclick="addLib('normalize')" class="px-2 py-1.5 text-xs bg-pink-900/30 border border-pink-700 hover:bg-pink-900/50 text-pink-400 rounded transition">+ Normalize.css</button>
+                            <button onclick="addLib('reset')" class="px-2 py-1.5 text-xs bg-rose-900/30 border border-rose-700 hover:bg-rose-900/50 text-rose-400 rounded transition">+ Reset.css</button>
+                            <button onclick="addLib('prefixfree')" class="px-2 py-1.5 text-xs bg-indigo-900/30 border border-indigo-700 hover:bg-indigo-900/50 text-indigo-400 rounded transition">+ Prefixing</button>
+                            <button onclick="addLib('neither')" class="px-2 py-1.5 text-xs bg-slate-700 border border-slate-500 hover:bg-slate-600 text-slate-200 rounded transition flex items-center gap-1">
+                                <span class="font-bold text-red-400">×</span> Remove
                             </button>
                         </div>
                     </div>
@@ -242,27 +275,23 @@
                     <div>
                         <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Meta & Head Tags</span>
                         <div class="flex flex-wrap gap-2">
-                            <button onclick="addLib('viewport')" class="px-2 py-1 text-xs bg-slate-800 border border-slate-600 hover:bg-slate-700 text-slate-300 rounded transition">+ Meta Viewport</button>
-                            <button onclick="addLib('charset')" class="px-2 py-1 text-xs bg-slate-800 border border-slate-600 hover:bg-slate-700 text-slate-300 rounded transition">+ Meta Charset</button>
-                            <button onclick="addLib('googlefont')" class="px-2 py-1 text-xs bg-slate-800 border border-slate-600 hover:bg-slate-700 text-slate-300 rounded transition">+ Google Font (Contoh)</button>
+                            <button onclick="addLib('viewport')" class="px-2 py-1.5 text-xs bg-slate-800 border border-slate-600 hover:bg-slate-700 text-slate-300 rounded transition">+ Viewport</button>
+                            <button onclick="addLib('charset')" class="px-2 py-1.5 text-xs bg-slate-800 border border-slate-600 hover:bg-slate-700 text-slate-300 rounded transition">+ Charset</button>
+                            <button onclick="addLib('googlefont')" class="px-2 py-1.5 text-xs bg-slate-800 border border-slate-600 hover:bg-slate-700 text-slate-300 rounded transition">+ Google Font</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="mb-4 pt-4 border-t border-slate-700">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Add External Stylesheet / Script (URL)</label>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Add External URL</label>
                     <div class="flex gap-2">
-                        <input type="text" id="external-url" class="flex-1 bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500 placeholder-slate-500" placeholder="https://cdn.example.com/style.css atau script.js">
-                        <button onclick="addExternal('css')" class="px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-500 text-white font-medium rounded transition flex items-center gap-1">
-                            <span>+ CSS</span>
-                        </button>
-                        <button onclick="addExternal('js')" class="px-3 py-1.5 text-xs bg-yellow-600 hover:bg-yellow-500 text-white font-medium rounded transition flex items-center gap-1">
-                            <span>+ JS</span>
-                        </button>
+                        <input type="text" id="external-url" class="flex-1 bg-slate-800 border border-slate-600 rounded px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-sky-500 placeholder-slate-500" placeholder="https://...">
+                        <button onclick="addExternal('css')" class="px-3 py-2 text-xs bg-blue-600 hover:bg-blue-500 text-white font-medium rounded transition">+ CSS</button>
+                        <button onclick="addExternal('js')" class="px-3 py-2 text-xs bg-yellow-600 hover:bg-yellow-500 text-white font-medium rounded transition">+ JS</button>
                     </div>
                 </div>
 
-                <textarea id="lib-content" class="w-full h-40 bg-[#0f172a] border border-slate-700 rounded text-slate-300 p-3 code-font text-xs outline-none focus:border-sky-500 resize-none leading-relaxed" placeholder="<script src='...'></script>&#10;<link rel='stylesheet' href='...'>&#10;<meta name='viewport' content='...'>"></textarea>
+                <textarea id="lib-content" class="w-full h-32 lg:h-40 bg-[#0f172a] border border-slate-700 rounded text-slate-300 p-3 code-font text-xs outline-none focus:border-sky-500 resize-none leading-relaxed" placeholder="<script src='...'></script>&#10;<link rel='stylesheet' href='...'>"></textarea>
                 
                 <div class="flex justify-between items-center mt-4 pt-4 border-t border-slate-700 sticky bottom-0 bg-slate-900/95 backdrop-blur">
                     <button onclick="clearLibraries()" class="px-3 py-2 bg-slate-800 hover:bg-red-900/30 text-red-400 hover:text-red-300 border border-slate-600 hover:border-red-800/50 text-xs font-medium rounded transition flex items-center gap-1">
@@ -279,20 +308,20 @@
 
     <!-- Full Script Modal -->
     <div id="source-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-lg w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl">
+        <div class="bg-slate-900 border border-slate-700 rounded-lg w-full max-w-4xl h-[85vh] lg:h-[80vh] flex flex-col shadow-2xl">
             <div class="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-950 rounded-t-lg">
-                <h3 class="font-bold text-white">Full Source Code</h3>
+                <h3 class="font-bold text-white text-sm lg:text-base">Full Source Code</h3>
                 <div class="flex gap-2">
                     <button onclick="downloadSource()" class="px-3 py-1.5 text-xs font-medium bg-green-600 hover:bg-green-500 text-white rounded shadow-lg shadow-green-900/20 transition-all flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
-                        Download .html
+                        Download
                     </button>
                     <button onclick="copySource()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-sky-400 rounded border border-slate-600 transition-colors">
-                        Salin Kode
+                        Salin
                     </button>
-                    <button onclick="closeModal()" class="text-slate-400 hover:text-white">
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -300,7 +329,7 @@
                 </div>
             </div>
             <div class="flex-1 p-0 relative">
-                <textarea id="full-source-area" class="w-full h-full bg-[#0f172a] text-slate-300 p-4 code-font text-xs md:text-sm outline-none resize-none leading-relaxed" readonly></textarea>
+                <textarea id="full-source-area" class="w-full h-full bg-[#0f172a] text-slate-300 p-3 lg:p-4 code-font text-xs md:text-sm outline-none resize-none leading-relaxed" readonly></textarea>
             </div>
         </div>
     </div>
@@ -399,6 +428,11 @@ if (typeof gsap !== 'undefined') {
 
         let htmlEditor, cssEditor, jsEditor, previewFrame, statusMsg, sourceModal, fullSourceArea, fullscreenModal, fullscreenFrame, fileUploadInput, librariesModal, libContent, cssPreprocessorSelect, cssPreprocessorControl, jsPreprocessorSelect, jsPreprocessorControl, htmlPreprocessorSelect, htmlPreprocessorControl;
         let isCentered = true;
+        let isPreviewVisibleMobile = true;
+
+        // Resizer variables
+        let isResizing = false;
+        let mainContainer, editorPanel, resizerHandle;
 
         function initElements() {
              htmlEditor = document.getElementById('editor-html');
@@ -426,6 +460,10 @@ if (typeof gsap !== 'undefined') {
 
              htmlPreprocessorSelect = document.getElementById('html-preprocessor');
              htmlPreprocessorControl = document.getElementById('preprocessor-control-html');
+
+             mainContainer = document.getElementById('main-container');
+             editorPanel = document.getElementById('editor-panel');
+             resizerHandle = document.getElementById('resizer');
         }
 
         function switchTab(type) {
@@ -465,7 +503,11 @@ if (typeof gsap !== 'undefined') {
             updatePreview().catch(console.error);
         }
 
-        // Safe LocalStorage helpers
+        function togglePreviewMobile() {
+            isPreviewVisibleMobile = !isPreviewVisibleMobile;
+            updateMobileLayout();
+        }
+
         function safeGetItem(key, fallback) {
             try {
                 const val = localStorage.getItem(key);
@@ -480,6 +522,54 @@ if (typeof gsap !== 'undefined') {
                 localStorage.setItem(key, value);
             } catch (e) {
                 console.warn('localStorage tidak tersedia:', e);
+            }
+        }
+
+        function updateMobileLayout() {
+            const isMobile = window.innerWidth < 1024;
+            const previewPanel = document.getElementById('preview-panel');
+            const btn = document.getElementById('btn-preview-mobile');
+            const txt = document.getElementById('txt-preview-mobile');
+            
+            if (!editorPanel || !previewPanel) return;
+
+            if (!isMobile) {
+                previewPanel.classList.remove('hidden');
+                editorPanel.style.flex = '';
+                editorPanel.style.height = '';
+                editorPanel.style.width = safeGetItem('lc_split', '50') + '%';
+                previewPanel.style.flex = '';
+                previewPanel.style.height = '';
+                if (btn) {
+                    btn.classList.add('hidden');
+                }
+                return;
+            }
+
+            // Mobile mode
+            if (btn) btn.classList.remove('hidden');
+            editorPanel.style.width = '';
+            
+            if (isPreviewVisibleMobile) {
+                previewPanel.classList.remove('hidden');
+                editorPanel.style.flex = '3';
+                editorPanel.style.height = 'auto';
+                previewPanel.style.flex = '2';
+                previewPanel.style.height = 'auto';
+                if (btn) {
+                    btn.classList.add('bg-pink-600');
+                    btn.classList.remove('bg-slate-600');
+                }
+                if (txt) txt.textContent = 'Preview';
+            } else {
+                previewPanel.classList.add('hidden');
+                editorPanel.style.flex = '1';
+                editorPanel.style.height = '100%';
+                if (btn) {
+                    btn.classList.remove('bg-pink-600');
+                    btn.classList.add('bg-slate-600');
+                }
+                if (txt) txt.textContent = 'Editor';
             }
         }
 
@@ -500,7 +590,8 @@ if (typeof gsap !== 'undefined') {
             if (htmlPreprocessorSelect) {
                 htmlPreprocessorSelect.value = safeGetItem('lc_html_preprocessor', 'html');
             }
-            
+
+            updateMobileLayout();
             updatePreview().catch(console.error);
         }
 
@@ -605,7 +696,7 @@ if (typeof gsap !== 'undefined') {
                     if(btn) {
                         if (btn.dataset.isAnimating) return;
                         btn.dataset.isAnimating = "true";
-                        const originalHTML = '<span class="font-bold text-red-400">×</span> Remove Base/Reset';
+                        const originalHTML = '<span class="font-bold text-red-400">×</span> Remove';
                         btn.innerHTML = '<span class="font-bold text-green-400">✓</span> Removed!';
                         btn.classList.add('border-green-500', 'text-green-300');
                         setTimeout(() => {
@@ -1334,6 +1425,50 @@ ${displayJs}
             };
         }
 
+        function initResizer() {
+            if (!resizerHandle || !editorPanel || !mainContainer) return;
+
+            const startResize = (e) => {
+                isResizing = true;
+                document.body.classList.add('resizing');
+                e.preventDefault();
+            };
+
+            resizerHandle.addEventListener('mousedown', startResize);
+            resizerHandle.addEventListener('touchstart', startResize, { passive: false });
+
+            const onMove = (clientX) => {
+                if (!isResizing) return;
+                const rect = mainContainer.getBoundingClientRect();
+                let x = clientX - rect.left;
+                const minWidth = 200;
+                const maxWidth = rect.width - 200;
+                if (x < minWidth) x = minWidth;
+                if (x > maxWidth) x = maxWidth;
+                const percent = (x / rect.width) * 100;
+                editorPanel.style.width = percent + '%';
+            };
+
+            document.addEventListener('mousemove', (e) => onMove(e.clientX));
+            document.addEventListener('touchmove', (e) => {
+                if (isResizing) e.preventDefault();
+                onMove(e.touches[0].clientX);
+            }, { passive: false });
+
+            const stopResize = () => {
+                if (!isResizing) return;
+                isResizing = false;
+                document.body.classList.remove('resizing');
+                const currentWidth = parseFloat(editorPanel.style.width);
+                if (!isNaN(currentWidth)) {
+                    safeSetItem('lc_split', currentWidth.toFixed(1));
+                }
+            };
+
+            document.addEventListener('mouseup', stopResize);
+            document.addEventListener('touchend', stopResize);
+        }
+
         function startApp() {
              initElements();
 
@@ -1366,6 +1501,11 @@ ${displayJs}
                 });
              });
 
+             window.addEventListener('resize', () => {
+                 updateMobileLayout();
+             });
+
+             initResizer();
              init();
         }
 
